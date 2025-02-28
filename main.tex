@@ -562,6 +562,11 @@ Sometimes, it is insightful to inform programmers type inconsistencies are relat
         \caption{Goanna's performance in relationship to different program sizes. The program size is measured in the number of syntax nodes.}
         \label{fig:node-size}
     \end{figure}
+
+    To note, it may be tempted to think that the time it takes is due to the inefficiency of the parser and static analysis (such as bindings and scopes). We show that the parser and static analysis is negligible even when the file grow to reasonably large and complex. The curprit here is the time it takes to enumerate the MUS and more precisely the number of MUSes.
+
+    \paragraph{\textbf{The Time to First MUS output}}
+
     
     \paragraph{\textbf{Error Complexity for Multi-step Type Errors}}
 
@@ -590,7 +595,24 @@ Sometimes, it is insightful to inform programmers type inconsistencies are relat
         \caption{Goanna's performance in relationship to different program sizes. The program size is measured in the number of syntax nodes.}
         \label{fig:multi-witness-time}
     \end{figure}
+  
+   \paragraph{\textbf{Error Complexity for Multi-party Type Errors}}
+    As we mentioned in chapter [], multi-party type errors are often more than one smaller type errors in disguise. Because of this, it is harder to measure because its performance characteristics vary based on the nature of the smaller type errors. For instance, with the example in Listing \ref{lst:eval-multi-party}, there are 
 
+\begin{center}
+    
+\end{center}
+\begin{lstlisting}[language=Haskell, caption=Multi-Party Hakslel Example, label={lst:eval-multi-party}]
+x a = case a of 
+  True -> 3
+  4 -> 4
+  "5" -> 5
+\end{lstlisting}
+
+
+
+
+    
     \subsection{Threats to Validity}
 
     \paragraph{\textbf{Selection of the dataset}}
