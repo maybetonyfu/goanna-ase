@@ -91,16 +91,17 @@
 %%  \sfx{IV}}\email{iauthor@gmail.com}
 %%=============================================================%%
 
-\author[1]{\fnm{Shuai} \sur{Fu}}\email{shuai.fu@monash.edu}
+\author{\fnm{Shuai} \sur{Fu}}\email{shuai.fu@monash.edu}
 
-\author[2]{\fnm{Tim} \sur{Dwyer}}\email{tim.dwyer@monash.edu}
+\author{\fnm{Tim} \sur{Dwyer}}\email{tim.dwyer@monash.edu}
 
-\author[3]{\fnm{Peter} \sur{Stuckey}}\email{peter.stuckey@monash.edu}
+\author{\fnm{Peter} \sur{Stuckey}}\email{peter.stuckey@monash.edu}
 
-\author[4]{\fnm{John} \sur{Grundy}}\email{john.grundy@monash.edu}
+\author{\fnm{John} \sur{Grundy}}\email{john.grundy@monash.edu}
 
 
-\affil[1,2,3,4]{\orgdiv{Department}, \orgname{Monash University}, \orgaddress{\street{Street}, \city{City}, \postcode{100190}, \state{State}, \country{Country}}}
+% \affil[1,2,3,4]{\orgdiv{Department}, \orgname{Monash University}, \orgaddress{\street{Street}, \city{City}, \postcode{100190}, \state{State}, \country{Country}}}
+\affil{ \orgname{Monash University}, \orgaddress{\country{Australia}}}
 
 
 %%==================================%%
@@ -108,9 +109,7 @@
 %%==================================%%
 
 \abstract{
-  \textbf{Purpose: } To provide type error debugging features that is accurate and comprehensive. \textbf{Methods: } We evaluated Goanna's accuacy usinig two datasets we have compiled: one from related research papers, one from community forums. We evalueted Goanna's perfomance using generated source code while controlling the variables of size of the program, and the complexity of type errors.
-  \textbf{Purpose: } We show that Goanna is more accurate than traditional tools in finding out the correct root cause. We also show that Goanna is suitable for providing instantanious type level development for small source files. For complex errors and large source file, Goanna can provide on demand type error diagnoses. 
-  \textbf{Conclusion: } We show that Goanna has advantage over traditional typechecking tools for its accuracy, with modest limitations on its performance.
+Statically typed languages offer significant advantages, such as bug prevention, enhanced code quality, and reduced maintenance costs. However, these benefits often come at the expense of a steep learning curve and a slower development pace. Haskell, known for its expressive and strict type system, poses challenges for inexperienced programmers in learning and using its type system, especially in debugging type errors. We introduce Goanna, a novel tool that serves as a type checker and an interactive type error debugging tool for Haskell. When encountering type errors, Goanna identifies a comprehensive list of potential causes and resolutions based on the minimum correction subsets (MCS) enumeration. We evaluated Goanna's effectiveness using 86 diverse Haskell programs from online discourse, demonstrating its ability to accurately identify and resolve type errors. Additionally, we present a collection of techniques and heuristics to enhance Goanna's suggestion-based error diagnosis and show their effectiveness from our evaluation.  
 }
 
 %%================================%%
@@ -125,7 +124,7 @@
 % 
 % \textbf{Conclusion:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.}
 
-\keywords{type error, Keyword2, Keyword3, Keyword4}
+\keywords{Type Errors, Constraint Logic Programming, Functional Languages, Integrated Development Environment}
 
 
 
@@ -847,7 +846,6 @@ To solve the former limitation, one potential solution is to segment the constra
 Another approach is to explore different MUS enumeration algorithms. The parallel capabilities of advanced MUS enumeration methods \cite{Zhao2016-bu, Bendik2020-pz} have not been fully harnessed in this study. By implementing these algorithms, we could expect enhanced performance in Goanna.
 
 
-
 \subsection{Comparison with Large Language Models}
     
 LLMs were actively experimented with performing programming related tasks such as wirting code, finding logical errors and generating documentations.  This development is tangential to Goanna's objectives of explaining type errors and supporting easier resolution of type errors. 
@@ -880,24 +878,27 @@ While LLMs are getting more and more accurate with each iteration, some doubt wh
 \section{Future Work}\label{sec:future-work}
 
 \paragraph{\textbf{Planned User Studies and Research Questions}}
+
 Evaluating Goanna with human participants is crucial for obtaining qualitative insights into its effectiveness. In preliminary workshop studies, participants exhibited positive reactions after using Goanna. However, a rigorous human study based on realistic debugging use cases is planned for the near future. We aim to investigate the following questions:
 
-\begin{itemize}
+\itemize{
   \item Can Goanna's accuracy contribute to improved understanding and performance in real-world programming tasks?
   \item Which user interface paradigms effectively leverage Goanna's strengths (such as accessing all possible error causes) and mitigate its limitations (such as slow response times with large programs)?
-\end{itemize}
+}
 
 \paragraph{\textbf{Suggesting Syntax Approaches}}
+
 An exciting avenue for enhancement is the generation of syntax change suggestions in addition to type change suggestions. As noted in \cite{Chen2014-dz}, syntax changes pose significant challenges. However, with recent advancements in generative models and research progress in ML-based type error resolution \cite{Seidel2017-uf}, the development of accurate syntax change suggestions is becoming increasingly feasible.
 
 \paragraph{\textbf{Supporting Additional Languages}}
+
 Expanding Goanna's capabilities to encompass other functional programming languages beyond Haskell is also a consideration. Languages such as Scala and OCaml, which practice similar type system to Haskell, can directly benefit from Goanna's functionalities. We also intend to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust in the future.
 
 \section{Summary} \label{sec:conclusion}
 
 In this paper, we introduced Goanna, a tool for identifying and resolving type errors in Haskell code. We described the features of Goanna, including its fix suggestions, type error grouping, and identifying multiple type errors. We also discussed our approaches to reduce and reprioritize fix suggestions while maintaining comprehensiveness. Additionally, we walked through the uses of Goanna-IDE, a type error debugging interface for Haskell.
 
-We evaluated the effectiveness of Goanna from a set of 86 diverse Haskell programs and demonstrated its ability to identify and resolve type errors accurately compared to other tools. We also showed that Goanna effectively condenses the list of causes. When a large number of causes is inevitable, Goanna's suggestion ranking heuristics ensures that more useful fixes are prioritized. Goanna currently works with Haskell, but in the future, we plan to extend its MCS-based error diagnosis to work with other strongly typed languages.
+We evaluated the effectiveness of Goanna from a set of 153 Haskell programs from online sources and research papers and demonstrated its ability to identify and resolve type errors accurately and reliably compared to other tools. We also benchmarked Goanna's performance in a variaties of error scenarios. Goanna currently works with Haskell, but in the future, we plan to extend its MCS-based error diagnosis to work with other strongly typed languages.
 
 \bibliography{paperpile}
 
