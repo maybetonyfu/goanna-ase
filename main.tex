@@ -879,21 +879,20 @@ While LLMs are getting more and more accurate with each iteration, some doubt wh
 
 \section{Future Work}\label{sec:future-work}
 
-\paragraph{\textbf{More Research Questions and Planned User Sudies}}
+\paragraph{\textbf{Planned User Studies and Research Questions}}
+Evaluating Goanna with human participants is crucial for obtaining qualitative insights into its effectiveness. In preliminary workshop studies, participants exhibited positive reactions after using Goanna. However, a rigorous human study based on realistic debugging use cases is planned for the near future. We aim to investigate the following questions:
 
-Can Goanna's accuracy
-What user inter
-It is important to evaluate Goanna with human participants and gain qualitative insight into its effectiveness. In one of our workshop preliminary studies, participants show positive reactions after using Goanna. A rigorous human study based on realistic debugging use cases is planned in the near future.   
-  	
-\paragraph{\textbf{Suggesting Syntax Approach}}
+\begin{itemize}
+  \item Can Goanna's accuracy contribute to improved understanding and performance in real-world programming tasks?
+  \item Which user interface paradigms effectively leverage Goanna's strengths (such as accessing all possible error causes) and mitigate its limitations (such as slow response times with large programs)?
+\end{itemize}
 
-One exciting path of improvement is to generate suggestions for syntax changes on top of type changes. As pointed out in \cite{Chen2014-dz}, syntax changes are much more challenging. But with the recent improvements of generative models and research advancement in ML-based type error \cite{Seidel2017-uf}, accurate syntax changes may be on the path to becoming feasible.
+\paragraph{\textbf{Suggesting Syntax Approaches}}
+An exciting avenue for enhancement is the generation of syntax change suggestions in addition to type change suggestions. As noted in \cite{Chen2014-dz}, syntax changes pose significant challenges. However, with recent advancements in generative models and research progress in ML-based type error resolution \cite{Seidel2017-uf}, the development of accurate syntax change suggestions is becoming increasingly feasible.
 
-\paragraph{\textbf{Supporting Other Languages}}
+\paragraph{\textbf{Supporting Additional Languages}}
+Expanding Goanna's capabilities to encompass other functional programming languages beyond Haskell is also a consideration. Languages such as Scala and OCaml, which practice similar type system to Haskell, can directly benefit from Goanna's functionalities. We also intend to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust in the future.
 
-Finally, it may be important to consider extending Goanna's capabilities to support other functional programming languages beyond Haskell. Several other languages, including Scala and OCaml, also support static typing and type inference, and Goanna could be a valuable addition in these contexts. In the future, we also hope to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust.
-
-  	
 \section{Summary} \label{sec:conclusion}
 
 In this paper, we introduced Goanna, a tool for identifying and resolving type errors in Haskell code. We described the features of Goanna, including its fix suggestions, type error grouping, and identifying multiple type errors. We also discussed our approaches to reduce and reprioritize fix suggestions while maintaining comprehensiveness. Additionally, we walked through the uses of Goanna-IDE, a type error debugging interface for Haskell.
