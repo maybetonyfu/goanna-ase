@@ -560,27 +560,133 @@ Program lengths ranged from 1 to 64 lines of code (mean=20, median=20). These pr
 \begin{tabular}{|p{5cm}|c|c|c|}
     \hline
     \textbf{Paper} & \textbf{Type} & \textbf{Tool} & \textbf{Programs} \\ \hline
-    \raggedright How Type Errors Were Fixed and What Students Did? & Empirical Study & & 14 \\ \hline
-    \raggedright Helium: for Learning Haskell & System/Tool & Helium & 7 \\ \hline
-    \raggedright Diagnosing Haskell Type Errors & System/Tool & SHErrLoc & 1 \\ \hline
-    \raggedright SHErrLoc: A Static Holistic Error Location & System/Tool & SHErrLoc & 1 \\ \hline
-    \raggedright Counterfactual Typing for Debugging Type Errors & System/Tool & Counterfactual Typing & 2 \\ \hline
-    \raggedright Understanding Beginners' Mistakes with Haskell & Empirical Study & & 2 \\ \hline
-    \raggedright Learning to Blame: Localizing Novice Type Errors with Data-driven Diagnosis & System/Tool & Nate & 5 \\ \hline
-    \raggedright Type Debugging with Counterfactual Type Error Messages Using an Existing Type Checker & & & 1 \\ \hline
-    \raggedright Improving Type Error Messages in OCaml & & & 5 \\ \hline
-    \raggedright Type Error Slicing in Implicitly Typed Higher-Order Languages & System/Tool & Type Error Slicing & 1 \\ \hline
-    \raggedright Getting into the Flow & System/Tool & & 1 \\ \hline
-    \raggedright Learning User-friendly Type-error Messages & System/Tool & LearnHaskell & 3 \\ \hline
-    \raggedright ChameleonIDE: Untangling Type Errors Through Interactive Visualization and Exploration & System/Tool & ChameleonIDE & 4 \\ \hline
-    \raggedright Investigating Compilation Errors of Students Learning Haskell & Empirical Study & & 5 \\ \hline
-    \raggedright The Chameleon Type Debugger (Tool Demonstration) & System/Tool & Chameleon & 6 \\ \hline
-    \raggedright Proofs about a Folklore Let-Polymorphic Type Inference Algorithm & System/Tool & Algorithm M & 2 \\ \hline
-    \raggedright Interactive Type Debugging in Haskell & System/Tool & Chameleon & 2 \\ \hline
-    \raggedright Exploiting Diversity in Type Checkers for Better Error Messages & System/Tool & Lazy Typing & 1 \\ \hline
-    \raggedright Improving Type Error Diagnosis & System/Tool & & 3 \\ \hline
-    \raggedright Searching for Type-Error Messages & System/Tool & SEMINAL & 1 \\ \hline
-    \raggedright Finding Minimum Type Error Sources & System/Tool & MaxSMT Based Tool & 1 \\ \hline
+
+  \raggedright
+    How Type Errors Were Fixed and What Students Did? &
+    Empirical Study &
+    &
+    14  \\ \hline
+
+  \raggedright
+    Helium: for Learning Haskell &
+    System/Tool &
+    Helium &
+    7 \\ \hline
+
+  \raggedright
+    Diagnosing Haskell Type Errors &
+    System/Tool &
+    SHErrLoc &
+    1 \\ \hline
+
+  \raggedright
+    SHErrLoc: A Static Holistic Error Location &
+    System/Tool &
+    SHErrLoc &
+    1 \\ \hline
+
+  \raggedright
+    Counterfactual Typing for Debugging Type Errors &
+    System/Tool &
+    Counterfactual Typing &
+    2 \\ \hline
+  
+  \raggedright
+    Understanding Beginners' Mistakes with Haskell &
+    Empirical Study &
+    &
+    2 \\ \hline
+  
+  \raggedright
+    Learning to Blame: Localizing Novice Type Errors with Data-driven Diagnosis &
+    System/Tool &
+    Nate &
+    5 \\ \hline
+
+  \raggedright
+    Type Debugging with Counterfactual Type Error Messages Using an Existing Type Checker &
+    &
+    &
+    1 \\ \hline
+
+  \raggedright
+    Improving Type Error Messages in OCaml &
+    &
+    &
+    5 \\ \hline
+
+  \raggedright
+    Type Error Slicing in Implicitly Typed Higher-Order Languages &
+    System/Tool &
+    Type Error Slicing &
+    1 \\ \hline
+
+  \raggedright
+    Getting into the Flow &
+    System/Tool &
+    &
+    1 \\ \hline
+
+  \raggedright
+    Learning User-friendly Type-error Messages &
+    System/Tool &
+    LearnHaskell &
+    3 \\ \hline
+
+  \raggedright
+    ChameleonIDE: Untangling Type Errors Through Interactive Visualization and Exploration &
+    System/Tool &
+    ChameleonIDE &
+    4 \\ \hline
+
+  \raggedright
+    Investigating Compilation Errors of Students Learning Haskell &
+    Empirical Study &
+    &
+    5 \\ \hline
+
+  \raggedright
+    The Chameleon Type Debugger (Tool Demonstration) &
+    System/Tool &
+    Chameleon &
+    6 \\ \hline
+
+  \raggedright
+    Proofs about a Folklore Let-Polymorphic Type Inference Algorithm &
+    System/Tool &
+    Algorithm M &
+    2 \\ \hline
+
+  \raggedright
+    Interactive Type Debugging in Haskell &
+    System/Tool &
+    Chameleon &
+    2 \\ \hline
+
+  \raggedright
+    Exploiting Diversity in Type Checkers for Better Error Messages &
+    System/Tool &
+    Lazy Typing &
+    1 \\ \hline
+
+  \raggedright
+    Improving Type Error Diagnosis &
+    System/Tool &
+    &
+    3 \\ \hline
+
+  \raggedright
+    Searching for Type-Error Messages &
+    System/Tool &
+    SEMINAL &
+    1 \\ \hline
+
+  \raggedright
+    Finding Minimum Type Error Sources &
+    System/Tool &
+    MaxSMT Based Tool &
+    1 \\ \hline
+
 \end{tabular}
 \caption{Summary of Studies and Tools in Haskell Research}
 \label{tab:haskell-research}
@@ -601,7 +707,7 @@ Program lengths ranged from 1 to 64 lines of code (mean=20, median=20). These pr
 
 \subsection{Accuracy and Reliability} \label{sub:eval-accuracy}
 
-Accuracy in type error diagnosis refers to whether the reported error aligns with the user's real intention, while reliability indicates whether the type error can be resolved by making suitable changes to the reported location. For each program, we compare Goanna's error diagnosis against the oracle answer. A diagnosis is deemed accurate if its suggested fix matches the accepted answer in terms of location. It is considered reliable if the type error can be resolved when the reported location is changed to a value of the bottom type (\texttt{undefined} in Haskell).
+We define accuracy in type error diagnosis as whether the reported error aligns with the user's real intention, while reliability indicates whether the type error can be resolved by making suitable changes to the reported location. For each program, we compare Goanna's error diagnosis against the oracle answer. A diagnosis is deemed accurate if its suggested fix matches the accepted answer in terms of location. It is considered reliable if the type error can be resolved when the reported location is changed to a value of the bottom type (\textit{undefined} in Haskell).
 
 We compared Goanna with the Glasgow Haskell Compiler (GHC) version 9.4 \cite{Gamari_undated-zu} and Helium \cite{Hage2023-kk} version 1.8. GHC is the most widely used Haskell compiler, known for its comprehensive capabilities and efficiency. Helium is noted for producing high-quality error messages \cite{Heeren2003-kd}. Because Goanna suggests multiple potential fixes, we included two variations: Goanna-1 (considering only the top suggestion) and Goanna-3 (considering the top three suggestions).
 
@@ -710,7 +816,6 @@ Multi-party errors present the most significant computational challenge among th
 
     \section{Discussion} \label{sec:discussion}
     
-
     \subsection{Strengths of MCS-based error dignositcs}
     Traditionally MUS has been the go-to for modeling type error in a constraint satisfactory interpretation. Tools and studies include \todo{cite this}.
 
