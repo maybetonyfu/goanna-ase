@@ -814,90 +814,94 @@ Multi-party errors present the most significant computational challenge among th
     % \paragraph{\textbf{Measurement of performance}} Performance on Goanna and GHC was measured on a Linux virtual machine with a 3.1 GHz Processor and 2GB RAM. In practice, complex systems like this may perform differently depending on hardware and software configurations. Although we were not able to extract the performance profile of each tool across different platforms and operating systems, we chose hardware with abundant resources and up-to-date software dependencies. During our performance measuring, neither CPU usage nor memory usage was fully stressed. Additionally, GHC was run with the ``-fno-code'' flag enabled to limit its usage to type-check only.
 
 
-    \section{Discussion} \label{sec:discussion}
-    
-    \subsection{Strengths of MCS-based error dignositcs}
-    Traditionally MUS has been the go-to for modeling type error in a constraint satisfactory interpretation. Tools and studies include \todo{cite this}.
+\section{Discussion} \label{sec:discussion}
 
-    MUS is good representation of type error because every MUS provide a complete chain of reasoning. This provide good indication on the location of the type error and the reason a conflict is detected. And often having one MUS is enough.
+This section begins with an examination of Goanna's accuracy and reliability, along with its practical advantages over traditional tools. We then analyze the trade-offs made in Goanna's performance and explore potential improvements. Finally, we compare the strengths and weaknesses of Goanna with Large Language Model (LLM)-based programming assistance and explore how these two approaches can be integrated for optimal benefits.
 
-    Goanna is the first type debugging tool to use MCS and MUS. Comparing to MUS based approach, MCS provide more succinct cause analysis, meaningful ways to better guess the root cause, able to identify all type errors in the source file instead of just one, is able to infer the most concrete types for the entire source program with each potential cause.
-    
-    \paragraph{Unbiased Type Error}
-    Unlike traditional compiler and type checkers such as GHC and helium, Goanna is not affected by left bias where only usage of a function is reported not the definition. Goanna does not stop when the first sign of a type error is encountered, instead collecting all the constraints and solve them wholesticaly, colliqually known as the french methdod. Goanna find all potentail causes and making it very easy for programmers to be review them one by one.
-    This largely contribute to that Goanna outperfrom traditional tools in accuracy.
-    
-    In some cases, seeing how a type error can be fixed though other ways, even though not align with programmers' intention, is helpful for understanding the problem. 
+\subsection{Strengths of Goanna and MCS-based Error Diagnostics}
 
+Goanna is the first debugging tool to use Minimal Correction Subsets (MCS). In comparison to traditional methods like Hindley-Milner and constraint-based type inference using Minimal Unsatisfiable Subsets (MUS), Goanna provides a more concise cause analysis and better guesses of root causes. It identifies all type errors in the source file rather than just one and infers the most concrete types for the entire source program.
 
-    \paragraph{Meaningful and Familiar Idioms for Type error}
-    MCS means the smallest change that will guide the user back to a well-behaved path of action. This type of error dignositics has been pracised in various places of user interface design such as autocrorrect software and git confilict resolution. Similarly, Goanna provides alternative solutions in a juxpositioned view. Programmers can review each one and see where are the changes going to be made and what are the effect of these changes in terms of typing.
+\paragraph{Unbiased Type Error Detection}
 
-    % A set of location mapped from MCS can be understood as the minimal amount of locations in the source code that needs to be modified to resolve the error state. This concept is well understood and offers clear insight into how the error occurs. In comparison, the traditional compiler tool, fails and report the last expression participated in the type checking, offers the interpretation: the type checking process was fine up to this step. Essentially, it means the reported location is guaranteed to be at least part of an suspected cause of the error. MUS based tool, like Chameleon, offers an interpretation: No matter how the error is caused, at least some part of the reported locations must another meaning: the reported location is a complete set of location of a potential cause of the error, but it may not be the true cause. I will illustrate how even choosing the wrong suspect can still lead to useful insight into finding the true cause.  
+One factor that Goanna surpasses traditional tools in accuracy is due to its unbiased approach toward all possible causes. Unlike conventional compilers and type checkers such as GHC and Helium, Goanna does not terminate upon finding the first type error. It avoids the left-to-right bias \todo{cite} where only the usage of a function is reported, not its definition. Goanna applies a holistic approach by collecting all constraints and solving them after the entire program has been translated into a constraint-level intermediate representation, commonly known as the "French method." In practice, reporting multiple possibilities for an error is highly useful. Programmers are equally prone to making mistakes in both calling and defining functions. It has been noted that some common causes of type errors among Haskell programmers occur at the definition site, such as outdated type annotations.
 
-    % x = ['a', "b", 1]
-    
-    \paragraph{Full Type Hints on ill-typed Program}
-    For implicitly typed languages, it is often beneficial to know the types of various expressions in the programs. Traditionally, these tools operate in interactive shells and command lines, such as \texttt{:t expression} in GHCI. Modern editors provide text overlay to support instant overview of these types. However, these type hints are only available when the program is well-typed, they either disappear or become outdated when type error occurs, where this kind of supporting information is most needed.
+\paragraph{Meaningful and Familiar Idioms for Type Errors}
 
-    Goanna is able to solve this issue by inferring types of all the surrounding expressions using MSS. MSS is the maximal set of constraints that represent a well typed portion of the source code, therefore concrete types can be assign to other part of the source code. Program can choose to ignore the type error for the moment and work on the rest of the program while enjoying the benefit of type hints.
+MCS-based error diagnostics consist of a collection of possible causes, each representing the smallest set of locations that, if changed, would result in a well-typed program. Goanna is not unique in employing this paradigm of debugging errors. This type of error diagnosis has been utilized in various user interface designs such as autocorrect software and Git conflict resolution. Goanna presents all possible causes in a juxtaposed view, allowing programmers to review each one, understand where changes will be made, and assess the effects on type assignments across the entire file. Observing how a type error can be fixed in different ways, even if not the root cause, can contribute significantly to understanding the problem.
 
-    In addition, Goanna's type hints integrate with the idea of multiple causes, that is, the types of surrounding expressions changes when a different assumptions are made about the type error. So the type hints of Goanna is dynamic based on which cause is selected by the programmer.
+\paragraph{Full Type Hints on ill-typed Program}
 
+In statically typed languages, particularly those like Haskell where expressions are implicitly typed, understanding the types of various expressions in programs is beneficial. Traditional tools, such as \texttt{:t expression} in GHCI, run in interactive shells or command lines. Modern editors enhance this functionality by providing text overlays for instant type overview. However, these type hints are only available when the program is well-typed; they either become unavailable or outdated when type errors occur. This limits their usefulness, as they are much more in need in ill-typed program.
 
+Goanna addresses this issue by inferring types for ill-typed programs to the greatest possible extent using the Maximal Satisfiable Subset (MSS). MSS represents the largest portion of the source code that is well-typed, allowing concrete types to be assigned to other parts of the code.
 
- 
- %    \subsubsection{MCS offers higher code reduction}
- %    In more complex tasks, MCS based type error diagnostic offer better code reduction than MUS based approaches. 
- % MUS-based error slicing can effectively eliminate program locations that are not contributing to a type error. However, research indicates that program slicing can effectively reduce only around 30\% of the code size that is required to understand a type error \cite{binkley_empirical_2007}. Further reduction is challenging with the knowledge of MUS alone due to the MUS's minimality. There are two contributors to why MCS approaches produce higher code reduction that MUS approach. First, source code are most of the time stay in they well typed state and occasionally diverge to a ill-typed state. Second, MUS representation of an error must include the intermediate `linking steps' which are common sense facts of the program. However these are hard to eliminated because excluding them the remaining constraints become satisfiable again, thus defeating the whole premise.   
+Furthermore, Goanna's type hints are two-dimensional: they encompass every expression in the program and also reflect how types would change if a different cause for type error is selected. This additional information helps verify whether a Goanna's diagnosis aligns with the programmer's true intentions, providing added assurance.
+
+\subsection{Optimizing Performance}
+
+Enhancing the performance of the MUS enumeration approach in Goanna is critical, especially as it can be slower than state-of-the-art type checking tools, as noted in our evaluation. Several strategies exist to address this issue. As discussed in Section \ref{sec:evaluation}, Goanna's performance is limited by the efficiency in discovering a single MUS through the shrink algorithm and the total number MUSes present in the program.
+
+To solve the former limitation, one potential solution is to segment the constraints of an entire file into smaller chunks, such as top-level function definitions, and process these sequentially in topological order or in parallel. With smaller sized source code comes smaller constraint system, which in turn helps improve the performance profoundly. This method is similar to how compiler tools manage type checking in large-scale projects. To solve the latter limitation,  partial MUS enumeration \cite{Previti2013-mr, Liffiton2016-xi} can be employed to limit the enumeration process within a reasonable time frame.
+
+Another approach is to explore different MUS enumeration algorithms. The parallel capabilities of advanced MUS enumeration methods \cite{Zhao2016-bu, Bendik2020-pz} have not been fully harnessed in this study. By implementing these algorithms, we could expect enhanced performance in Goanna.
 
 
- %    \subsubsection{Minimal Lossage Type Recovery enabled by MSS-based} 
-
- %    To assist the diagnostic of MCS-based error diagnosistic
-
-    
-    
-    \subsection{Optimising Performance}
-    Syntactic approach is to instead of using the constraints from the entire file, we divide it into top-level definitions and solve them sequencially in topological order. This has always been the way of how compiler tools type check gigantic projects. The downside is doing so we no longer use the  wholestic approach.
-
-    A major challenge of MCS-based type dignositics is making it performant. As seen from our evaluation that it can be slower compared to state-of-art type checking tools. There are multiple avenues to address this issue: partiall
-   Several approaches to achieve higher performance of Goanna show promise. The parallel capability of state of the art MUS enumeration \cite{Zhao2016-bu} algorithms are not explored in this study. With proper implementation, it will be possible to lower the hardware barrier of entry for wide adoption of MCS-based type error suggestion tools. Further, with domain-agnostic MUS enumeration tools \cite{Bendik2020-pz}, it should be possible to consistently achieve high performance while using a more performant constraint system and proper parameterization. Lastly, in a real-world implementation, it is possible to employ partial MUS enumeration \cite{Previti2013-mr,Liffiton2016-xi} to restrict the enumeration process in a sensible time-bound.
 
 \subsection{Comparison with Large Language Models}
     
-Our auto-calibration algorithm benefit from the observation that: in real life, almost all errors have multi-step. Humans are not easily fooled by ground level truths. Type conflict in literal level (e.g. \texttt{['2', "3", True]}) can be identified without tool assistance. However type conflict with multiple levels of interaction (e.g. \texttt{[x, y, z] where x = chr 65, y = '3':[], z = null y} are harder. Our auto-calibration algorithm simplifies these indirections when they start to introduce generate too many options. 
+LLMs were actively experimented with performing programming related tasks such as wirting code, finding logical errors and generating documentations.  This development is tangential to Goanna's objectives of explaining type errors and supporting easier resolution of type errors. 
 
-For multiple-witness type error generally do not increase the number of suspects. For multiple-party type errors, we observe that the number of type error is a factor of both the number of step and the number of parties. So in most of the cases, simply start to reduce the number of indirections can reduce the number of suspects of multiple-witness type error.
+\begin{figure}[hbt]
+  \includegraphics[width=\linewidth]{images/LLM.pdf}
+  \caption[LLM explaining a type error; it began very accurate, then went on to give incorrect and contradicting analysis]{\label{fig:llm}
+  The figure shows the user prompted LLM to explain the type error in a Haskell function definition \texttt{mapList}. LLM, at first, showed a profound understanding of the subject matter, clearly explained the intention of the function, and accurately identified the error location. In the last sentence, LLM claimed the definition would result in an infinite type because trying to unify \texttt{a} with \texttt{(a -> b) -> [a] -> [b]}. In reality, unifying two functions with different numbers of arguments will not cause infinite types. 
+    }
+\end{figure}
 
+While LLMs have shown capability in recognizing basic errors, they often display a limited understanding of type theories and multi-step reasoning ability. Fig.~\ref{fig:llm} depicts a type error caused by mismatching numbers of arguments in the function \texttt{mapList}; although provided a correct error identification at the start, GPT 4 proceeded to claim, “This results in an infinite type situation because Haskell tries to unify the type \texttt{a} with the type \texttt{(a -> b) -> [a] -> [b]}, which results in an infinite loop of types, and Haskell cannot resolve this,” illustrating a fundamental lack of understanding of type theory.
+
+\begin{figure}[hbt]
+  \includegraphics[width=\linewidth]{images/LLM2.pdf}
+  \caption[An example where LLM identified a type error in well-typed source code]{\label{fig:llm2}
+  The figure shows a user asking an LLM whether the provided Haskell source code has a type error. While the provided code is, in fact, well-typed, LLM hallucinated a type error and ignored how polymorphic functions work in Haskell. In the example, the function \texttt{f},  defined the same way as the \texttt{id} function, can be applied with a value of any type.
+    } 
+\end{figure}
+
+When tested with the prompt "Is there a type error in the Haskell code: v = let f x = x in (f 3, f '3')", most LLMs incorrectly reported yes (Fig.~\ref{fig:llm2}). However, this Haskell code is indeed well-typed. LLMs can give wrong explanations and find type errors that do not exist, unlike tools like GHC, Helium, and Goanna. While there is clearly a role for their usage in programming assistance \cite{Lee2024-hs}, they do not “reason” about types and, hence, are not trustworthy.
+
+While LLMs are getting more and more accurate with each iteration, some doubt whether they will ever become as reliable as theory-based tools \cite{Berglund2023-ig}. We believe in the great potential of integrating LLMs with existing theory-based tools, such as Goanna. This integration could enhance the performance of LLMs by aligning their operations with accurate theoretical guides or utilizing their strengths to complement traditional tools' shortcomings, such as suggesting syntactical improvements, and coming up with personalized error message suited for the programmers skill level. This synergy could lead to more robust programming assistance using both types of tools. We propose two candidate workflows:
+
+\itemize{
+  \item{\textbf{Code Generation and Validation}: LLMs could generate initial source code based on user-provided prompts. Theory-based tools, such as Goanna, then check for errors. Detected errors could be fed back to the LLMs for corrections, enhancing both the efficiency and accuracy of code development.}
+  \item {\textbf{Error Tutoring and Resolution}: Theory-based tools could identify errors in manually written code, with LLMs suggesting syntax corrections. This combines the precise error detection from traditional theory-based tools with the ability of LLMs to generate effective syntax changes, surpassing traditional tools in this domain.}
+}
 
 \section{Future Work}\label{sec:future-work}
+
 \paragraph{\textbf{More Research Questions and Planned User Sudies}}
+
 Can Goanna's accuracy
 What user inter
 It is important to evaluate Goanna with human participants and gain qualitative insight into its effectiveness. In one of our workshop preliminary studies, participants show positive reactions after using Goanna. A rigorous human study based on realistic debugging use cases is planned in the near future.   
   	
 \paragraph{\textbf{Suggesting Syntax Approach}}
-    One exciting path of improvement is to generate suggestions for syntax changes on top of type changes. As pointed out in \cite{Chen2014-dz}, syntax changes are much more challenging. But with the recent improvements of generative models and research advancement in ML-based type error \cite{Seidel2017-uf}, accurate syntax changes may be on the path to becoming feasible.
 
-\paragraph{\textbf{Performance Optimization}}
+One exciting path of improvement is to generate suggestions for syntax changes on top of type changes. As pointed out in \cite{Chen2014-dz}, syntax changes are much more challenging. But with the recent improvements of generative models and research advancement in ML-based type error \cite{Seidel2017-uf}, accurate syntax changes may be on the path to becoming feasible.
 
 \paragraph{\textbf{Supporting Other Languages}}
-    Finally, it may be important to consider extending Goanna's capabilities to support other functional programming languages beyond Haskell. Several other languages, including Scala and OCaml, also support static typing and type inference, and Goanna could be a valuable addition in these contexts. In the future, we also hope to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust.
+
+Finally, it may be important to consider extending Goanna's capabilities to support other functional programming languages beyond Haskell. Several other languages, including Scala and OCaml, also support static typing and type inference, and Goanna could be a valuable addition in these contexts. In the future, we also hope to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust.
 
   	
-  	
-
-    % Additional future work could include examining Goanna's integration with other tools within the Haskell development ecosystem. For instance, including Goanna in widely used text editors or development environments could offer a more integrated and fluid experience for developers and an important avenue for Goanna to reach a wider audience. 
-
-    
-
-
-
 \section{Summary} \label{sec:conclusion}
+
 In this paper, we introduced Goanna, a tool for identifying and resolving type errors in Haskell code. We described the features of Goanna, including its fix suggestions, type error grouping, and identifying multiple type errors. We also discussed our approaches to reduce and reprioritize fix suggestions while maintaining comprehensiveness. Additionally, we walked through the uses of Goanna-IDE, a type error debugging interface for Haskell.
 
 We evaluated the effectiveness of Goanna from a set of 86 diverse Haskell programs and demonstrated its ability to identify and resolve type errors accurately compared to other tools. We also showed that Goanna effectively condenses the list of causes. When a large number of causes is inevitable, Goanna's suggestion ranking heuristics ensures that more useful fixes are prioritized. Goanna currently works with Haskell, but in the future, we plan to extend its MCS-based error diagnosis to work with other strongly typed languages.
+
 \bibliography{paperpile}
 
 \end{document}
+
+
