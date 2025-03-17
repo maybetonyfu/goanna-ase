@@ -80,7 +80,7 @@
 %%\unnumbered% uncomment this for unnumbered level heads
 \begin{document}
 
-\title[Article Title]{Goanna: Reasonable Type Error Debugging in Haskell }
+\title[Article Title]{Goanna: The Most Reasonable Type Error Debugging}
 
 %%=============================================================%%
 %% GivenName	-> \fnm{Joergen W.}
@@ -131,6 +131,7 @@ Statically typed languages offer significant advantages, such as bug prevention,
 \maketitle
 
 \section{Introduction} \label{sec:introduction}
+
 Statically typed languages offer numerous benefits in software engineering, including the ability to detect errors before program execution, facilitating easier and safer code refactoring, enhancing code readability, and providing tighter integration with code editors and integrated development environments (IDEs). These attributes often render statically typed languages more suitable for large projects that undergo frequent modifications. The emergence of new languages with strong type systems, such as Rust and TypeScript, and the addition of static type checkers to previously dynamically typed languages, like MyPy for Python and static types for PHP and Ruby, reflect this trend.
 
 Statically typed languages manifest in various paradigms. Functional programming languages, such as ML and Haskell, have inherently embraced static typing. Unlike languages from other paradigms, such as Java and C, functional languages offer two distinct advantages. First, they feature flexible and expressive type systems that allow domain problems to be succinctly modeled at the type level with guarantees of correct behavior upon successful compilation—a capability not easily achieved in other paradigms. Second, they support type inference, enabling rigorous type checking even in the absence of explicit type annotations. This paper employs Haskell as a case study to explore the challenges and solutions associated with enriching the type system experience. Haskell is renowned for its expressive and robust type system, which allows programmers to model complex problems using constructs and relationships within the type system and to develop programs in a type-driven manner. Innovations in type systems originally introduced by Haskell, such as algebraic data types, type inference, and type classes, have been incorporated into mainstream programming languages \cite{Hudak2007-kn, TypeScriptTeam_undated-qk, Klabnik_undated-mp, Griesemer_undated-ff}.
@@ -190,7 +191,7 @@ Multi-step type errors are more common in practice. They occur natually when pro
   \includegraphics[width=\linewidth]{Multi-Step}
   \caption[This illustration depicts a multi-step type error in Haskell]{
     \label{fig:multi-step-example}
-    This illustration depicts a multi-step type error in Haskell. In the program (left panel), the string literal \texttt{"True"} is assigned to the variable \texttt{a} on line 1, followed by the assignment of \texttt{a}'s value to variable \texttt{b} on line 2. Subsequently, on line 3, the program attempts to use \texttt{b} as a boolean condition in an \texttt{if} expression. The error analysis can be visualized as a "chain" of reasoning, represented by the continuous line (right panel), tracing the propagation of the type mismatch through the sequence of assignments and usage. }
+    A multi-step type error in Haskell. In the program (left panel), the string literal \texttt{"True"} is assigned to the variable \texttt{a} on line 1, followed by the assignment of \texttt{a}'s value to variable \texttt{b} on line 2. Subsequently, on line 3, the program attempts to use \texttt{b} as a boolean condition in an \texttt{if} expression. The error analysis can be visualized as a "chain" of reasoning, represented by the continuous line (right panel), tracing the propagation of the type mismatch through the sequence of assignments and usage. }
 \end{figure}
 
 A \textbf{multi-witness type error} is like simple type error, but instead of each type assignment is supported by one location, each type assignment can be supported by multiple locations . For instance, as shown in Fig.~\ref{fig:multi-witness-example}, multiple locations (lines 3,4,5) support that {\tt a} has the type {\tt Int -> String}. On the other hand, a single location (line 2) shows that {\tt a} has the type {\tt Int -> Char}.  Clarifying and juxtaposing this discrepancy in witnesses is key to supporting understanding this type of error.
@@ -202,7 +203,7 @@ Multi-witness type errors are also common in practice. They often occur when cha
 \centering  \includegraphics[width=\linewidth]{Multi-Witness}
   \caption[This illustration depicts a multi-witness type error in Haskell]{
     \label{fig:multi-witness-example}
-    This figure presents the analysis of a multi-witness type error in Haskell. In the source code (Left), a type conflict arises from the \texttt{case} expression, which could be interpreted as \texttt{Char} based on the value in line 2, or as a \texttt{String} based on the values in lines 3, 4, and 5. The type conflict is graphically illustrated (Right) with \texttt{String} values marked in pink and the \texttt{Char} value in blue. The majority of \texttt{String} value witnesses suggest the lone \texttt{Char} literal \texttt{'I'} on line 2 might be a typographical error. This discrepancy underscores the significance of witness count in identifying the likely error source.}
+    A multi-witness type error in Haskell. In the source code (Left), a type conflict arises from the \texttt{case} expression, which could be interpreted as \texttt{Char} based on the value in line 2, or as a \texttt{String} based on the values in lines 3, 4, and 5. The type conflict is graphically illustrated (Right) with \texttt{String} values marked in pink and the \texttt{Char} value in blue. The majority of \texttt{String} value witnesses suggest the lone \texttt{Char} literal \texttt{'I'} on line 2 might be a typographical error. This discrepancy underscores the significance of witness count in identifying the likely error source.}
 \end{figure}
 
 A \textbf{multi-party type error} involves more than two potential type assignments, each supported by distinct location.  Fig.~\ref{fig:multi-party-example} presents a typical multi-party type error: the expression {\tt d} can not be assigned a type because 3 locations on line 1 suggest 3 potential types for \texttt{d}. In practice, addressing such errors requires breaking them down into multiple type errors of simpler forms. 
@@ -213,7 +214,7 @@ Multi-party type errors are not common in real life programs,. They can happen w
 \centering  \includegraphics[width=\linewidth]{Multi-Party}
   \caption[This illustration depicts a multi-party type error in Haskell]{
     \label{fig:multi-party-example}
-    This figure analyzes a multi-party type error in the source code (Left), where the list \texttt{d} could potentially be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The disagreement is visually represented (Right) by three distinct colors, each corresponding to the cause of one of the possible types. This scenario differs from previous examples as resolving the type error requires adjustments at multiple locations within the code, not just a single change.
+    A multi-party type error in Haskell (Left), where the list \texttt{d} could potentially be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The disagreement is visually represented (Right) by three distinct colors, each corresponding to the cause of one of the possible types. This scenario differs from previous examples as resolving the type error requires adjustments at multiple locations within the code, not just a single change.
        }
 \end{figure}
   
@@ -472,9 +473,9 @@ Sometimes, it is insightful to inform programmers type inconsistencies are relat
 	More specifically, to Goanna, type error grouping provides an effective means to reduce the number of causes. In an ill-typed program with $m$ errors, each having $n$ potential causes, will result in $nm$ total causes. Dividing these causes into separate errors that align correctly with intuition is the most important technique to enhance Goanna's error reporting.
 
     \subsection{Cause Ranking} \label{sub:ranking}
-     In Goanna-IDE, when a list of potential causes is on display, Goanna-IDE also shows the top 3 ``likely" causes according to the ranking heuristics. This is very helpful because programmers will have a starting point for the investigation. We provide a set of efficient heuristics for ranking suggestions. 
+     In Goanna-IDE, when a list of potential causes is on display, Goanna-IDE also shows the top ``likely" causes according to the ranking heuristics. This is very helpful because programmers will have a starting point for the investigation. We provide a set of efficient heuristics for ranking suggestions. 
 
-    \paragraph{Number of Error Locations.}
+    \paragraph{Number of Error Locations}
     Causes comprising fewer locations are prioritized and presented earlier in the list. For instance:
    \begin{figure}[ht!]
         \centering
@@ -485,7 +486,7 @@ Sometimes, it is insightful to inform programmers type inconsistencies are relat
 
     In the example in Fig.~\ref{fig:loc-count}, there exist two possible fixes: 1) Changing \texttt{'A'} and \texttt{'B'} to the string type, and 2) changing \texttt{"C"} to the \texttt{Char} type. As the latter fix affects only 1 location (as opposed to 2 in the former), it is assigned a higher ranking and appears earlier in the list.
 
-    \paragraph{Change specificity.}
+    \paragraph{Change Specificity}
 	Another useful heuristic is to encourage the cause whose fix will result in every surrounding term to be as concrete as possible.
 	
 	
@@ -498,44 +499,41 @@ Sometimes, it is insightful to inform programmers type inconsistencies are relat
 
     In the example in Fig.~\ref{fig:specificity}, Goanna can suggest two potential causes and fixes. First, change the integer literal \texttt{3} to a \texttt{Bool} type. Second, change the function \texttt{not} to a different function that accepts an integer as input. The second fix results in variable \texttt{x} having a less concrete type. Indeed, \texttt{x} can have any type if not limit what function to replace \texttt{not} with. Goanna prioritizes the first cause over the second. 
 
-    \paragraph{Error span.}
-    Goanna prioritizes the potential causes whose corresponding locations are clustered within fewer function definitions and lowers the likelihood of those whose corresponding locations are spread across multiple definitions or even multiple files.  
-
     
-    \subsection{Calibration} \label{sub:optimization}
+   %  \subsection{Calibration} \label{sub:optimization}
     
-    We employ three techniques to elevate the clarity of the suggestion list: reduction of constraint count, elimination of over-fitting resolutions (solutions that are technically correct but involve making unnecessary modifications), and elimination of redundant fixes.
+   %  We employ three techniques to elevate the clarity of the suggestion list: reduction of constraint count, elimination of over-fitting resolutions (solutions that are technically correct but involve making unnecessary modifications), and elimination of redundant fixes.
 
-    \paragraph{Minimize Constraint Count.}
-    The number of constraints directly influences the time complexity associated with enumerating the Minimum Correction Subset (MCS). By merging multiple constraints into a singular one, we can reduce the total count of constraints and, in turn, improve the performance of enumeration. Yet, this approach requires careful application, as it could potentially lead to unsolvable situations or propose infeasible fixes, as the combined locations in the source code must either all contribute to the type error or none do. An effective application of this technique is to merge all constraints created by sub-expressions in a type signature.
+   %  \paragraph{Minimize Constraint Count}
+   %  The number of constraints directly influences the time complexity associated with enumerating the Minimum Correction Subset (MCS). By merging multiple constraints into a singular one, we can reduce the total count of constraints and, in turn, improve the performance of enumeration. Yet, this approach requires careful application, as it could potentially lead to unsolvable situations or propose infeasible fixes, as the combined locations in the source code must either all contribute to the type error or none do. An effective application of this technique is to merge all constraints created by sub-expressions in a type signature.
 
-   \begin{figure}[ht!]
-        \centering
-        \includegraphics[width=\linewidth]{images/Combine-Constraints}
-        \caption[Combine constraints in type signature]{\textbf{Combine constraints in type signature.} For a simple Haskell program (top),  without any optimization, Goanna generates 10 constraints (bottom left), indicated by 10 subgoals in the predicate. By combining the constraints in the type signature, Goanna produces 2 constraints (bottom right).}
-        \label{fig:combine-constraints}
-    \end{figure}
+   % \begin{figure}[ht!]
+   %      \centering
+   %      \includegraphics[width=\linewidth]{images/Combine-Constraints}
+   %      \caption[Combine constraints in type signature]{\textbf{Combine constraints in type signature.} For a simple Haskell program (top),  without any optimization, Goanna generates 10 constraints (bottom left), indicated by 10 subgoals in the predicate. By combining the constraints in the type signature, Goanna produces 2 constraints (bottom right).}
+   %      \label{fig:combine-constraints}
+   %  \end{figure}
 
-    Consider the example in Fig.~\ref{fig:combine-constraints}. Without optimization, this code would spawn 10 constraints. However, applying this optimization can achieve an equivalent outcome with merely 2 constraints. Notably, this optimization forfeits the capability to suggest fixes for sub-expressions within a type signature, a decision that warrants some consideration but, in our experience, often leads to clearer error localizations.
+   %  Consider the example in Fig.~\ref{fig:combine-constraints}. Without optimization, this code would spawn 10 constraints. However, applying this optimization can achieve an equivalent outcome with merely 2 constraints. Notably, this optimization forfeits the capability to suggest fixes for sub-expressions within a type signature, a decision that warrants some consideration but, in our experience, often leads to clearer error localizations.
 
-    \paragraph{Elimination of Over-Fitting Resolutions.}
-    Over-fitting often refers to a situation where error correction tools provide solutions that are technically correct but involve making unnecessary modifications. In Goanna, every syntax node in the source code generates one or more constraints. This includes structural nodes such as function applications and let expressions. However, very often, suggesting that the user should modify the entire function application expression is not particularly instructive when changing one of the arguments fixes the type error as well. Disabling suggestions for over-fitting solutions improves the clarity of the suggestion list and enhances the speed of MCS enumeration.
+   %  \paragraph{Elimination of Over-Fitting Resolutions.}
+   %  Over-fitting often refers to a situation where error correction tools provide solutions that are technically correct but involve making unnecessary modifications. In Goanna, every syntax node in the source code generates one or more constraints. This includes structural nodes such as function applications and let expressions. However, very often, suggesting that the user should modify the entire function application expression is not particularly instructive when changing one of the arguments fixes the type error as well. Disabling suggestions for over-fitting solutions improves the clarity of the suggestion list and enhances the speed of MCS enumeration.
    
 
-    \paragraph{Elimination of Redundant Causes.}
-    Goanna iterates over the possible causes and removes the ones that fail to deliver new insights. If all locations in a cause suggestion have already been covered in preceding suggestions, subsequent suggestions that merely rearrange these locations in different combinations can be omitted.
+   %  \paragraph{Elimination of Redundant Causes.}
+   %  Goanna iterates over the possible causes and removes the ones that fail to deliver new insights. If all locations in a cause suggestion have already been covered in preceding suggestions, subsequent suggestions that merely rearrange these locations in different combinations can be omitted.
     
-   \begin{figure}[ht!]
-        \centering
-        \includegraphics[width=0.9\linewidth]{images/Reduction-Example}
-        \caption[The number of potential causes can grow exponentially]{\textbf{The number of potential causes can grow exponentially.} In the ill-typed Haskell program (Top), there are 4 different ways (Bottom) to fix the type error. It is not hard to see this growth is exponential, and showing all the alternatives is not helpful.}
-        \label{fig:reduction-example}
-    \end{figure}
+   % \begin{figure}[ht!]
+   %      \centering
+   %      \includegraphics[width=0.9\linewidth]{images/Reduction-Example}
+   %      \caption[The number of potential causes can grow exponentially]{\textbf{The number of potential causes can grow exponentially.} In the ill-typed Haskell program (Top), there are 4 different ways (Bottom) to fix the type error. It is not hard to see this growth is exponential, and showing all the alternatives is not helpful.}
+   %      \label{fig:reduction-example}
+   %  \end{figure}
     
-    Consider the example in Fig.~\ref{fig:reduction-example}. Without knowing the true intention of the programmer, Goanna can provide four ways to fix the issue shown at the bottom. However, closer inspection reveals that after the first two suggestions, we no longer unearth new insights. Therefore, they can be removed to enhance the clarity of the suggestion list. 
-    Note that this can remove the correct answer (say D), but if the programmer uses part of the (A) to make the fix, the revised type error will include the correct fix. 
+   %  Consider the example in Fig.~\ref{fig:reduction-example}. Without knowing the true intention of the programmer, Goanna can provide four ways to fix the issue shown at the bottom. However, closer inspection reveals that after the first two suggestions, we no longer unearth new insights. Therefore, they can be removed to enhance the clarity of the suggestion list. 
+   %  Note that this can remove the correct answer (say D), but if the programmer uses part of the (A) to make the fix, the revised type error will include the correct fix. 
     
-    Removing superfluous MCS-based suggestions that recycle different permutations of the same set of locations is an instantiation of the Set Cover Problem (SCP). The problem can be rephrased as finding the minimal number of MCSes that cover all the potential locations that could cause the type error. Many approaches solve the SCP \cite{Caprara2000-vw}, including eager algorithms, linear programming, and heuristic-based algorithms. Generally, we found all of these approaches find the minimal cover of type errors efficiently. Goanna uses the OR-tools \cite{Google_Developers_undated-ew} for this task.
+   %  Removing superfluous MCS-based suggestions that recycle different permutations of the same set of locations is an instantiation of the Set Cover Problem (SCP). The problem can be rephrased as finding the minimal number of MCSes that cover all the potential locations that could cause the type error. Many approaches solve the SCP \cite{Caprara2000-vw}, including eager algorithms, linear programming, and heuristic-based algorithms. Generally, we found all of these approaches find the minimal cover of type errors efficiently. Goanna uses the OR-tools \cite{Google_Developers_undated-ew} for this task.
        
 \section{Evaluation} \label{sec:evaluation}
 
@@ -823,7 +821,9 @@ Goanna is the first debugging tool to use Minimal Correction Subsets (MCS). In c
 
 \paragraph{Unbiased Type Error Detection}
 
-One factor that Goanna surpasses traditional tools in accuracy is due to its unbiased approach toward all possible causes. Unlike conventional compilers and type checkers such as GHC and Helium, Goanna does not terminate upon finding the first type error. It avoids the left-to-right bias \todo{cite} where only the usage of a function is reported, not its definition. Goanna applies a holistic approach by collecting all constraints and solving them after the entire program has been translated into a constraint-level intermediate representation, commonly known as the "French method." In practice, reporting multiple possibilities for an error is highly useful. Programmers are equally prone to making mistakes in both calling and defining functions. It has been noted that some common causes of type errors among Haskell programmers occur at the definition site, such as outdated type annotations.
+One factor that Goanna surpasses traditional tools in accuracy is due to its unbiased approach toward all possible causes. Conventional compilers and type checkers such as GHC and Helium, terminate upon finding the first type error, result in only the usage of a function is reported in the error message, its definition was never blamed, an issue known as left-to-right bias in traditional type-checking algorithms, a notable shortcoming that limits the usability of error messages \cite{McAdam2002-vb, Lee1998-fx, Chen2014-ev}.
+
+Unlike conventional compilers which add constraint one at a time, Goanna applies a holistic approach, colloquially known as ``the French method'', by collecting all constraints from the source program and delaying the solving until the entire program has been translated into a constraint-level intermediate representation. This approach allows Goanna to asserting multiple assumptions regarding the type error using constraint programming techniques. In practice, reporting multiple possibilities for an error is highly useful. Programmers are equally prone to making mistakes in both calling and defining functions. It has been noted that some common causes of type errors among Haskell programmers occur at the definition site, such as outdated type annotations.
 
 \paragraph{Meaningful and Familiar Idioms for Type Errors}
 
