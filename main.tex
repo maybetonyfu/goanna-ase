@@ -103,71 +103,51 @@
 % \affil[1,2,3,4]{\orgdiv{Department}, \orgname{Monash University}, \orgaddress{\street{Street}, \city{City}, \postcode{100190}, \state{State}, \country{Country}}}
 \affil{ \orgname{Monash University}, \orgaddress{\country{Australia}}}
 
-
-%%==================================%%
-%% Sample for unstructured abstract %%
-%%==================================%%
-
 \abstract{
 Statically typed languages offer significant advantages, such as bug prevention, enhanced code quality, and reduced maintenance costs. However, these benefits often come at the expense of a steep learning curve and a slower development pace. Haskell, known for its expressive and strict type system, poses challenges for inexperienced programmers in learning and using its type system, especially in debugging type errors. We introduce Goanna, a novel tool that serves as a type checker and an interactive type error debugging tool for Haskell. When encountering type errors, Goanna identifies a comprehensive list of potential causes and resolutions based on the minimum correction subsets (MCS) enumeration. We evaluated Goanna's effectiveness using 86 diverse Haskell programs from online discourse, demonstrating its ability to accurately identify and resolve type errors. Additionally, we present a collection of techniques and heuristics to enhance Goanna's suggestion-based error diagnosis and show their effectiveness from our evaluation.  
 }
 
-%%================================%%
-%% Sample for structured abstract %%
-%%================================%%
-
-% \abstract{\textbf{Purpose:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
-% 
-% \textbf{Methods:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
-% 
-% \textbf{Results:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
-% 
-% \textbf{Conclusion:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.}
-
 \keywords{Type Errors, Constraint Logic Programming, Functional Languages, Integrated Development Environment}
-
-
 
 \maketitle
 
 \section{Introduction} \label{sec:introduction}
 
-Statically typed languages offer numerous benefits in software engineering, including the ability to detect errors before program execution, facilitating easier and safer code refactoring, enhancing code readability, and providing tighter integration with code editors and integrated development environments (IDEs). These attributes often render statically typed languages more suitable for large projects that undergo frequent modifications. The emergence of new languages with strong type systems, such as Rust and TypeScript, and the addition of static type checkers to previously dynamically typed languages, like MyPy for Python and static types for PHP and Ruby, reflect this trend.
+Statically typed languages offer numerous benefits in software engineering, including the ability to detect errors before program execution \cite{Ray2017-gq,Gao2017-xn}, facilitating easier and safer code refactoring \cite{Kleinschmager2012-bg}, enhancing code readability \cite{Endrikat2014-uz}, and providing tighter integration with code editors and integrated development environments (IDEs) \cite{Mayer2012-ko}. These attributes often render statically typed languages more suitable for large projects that undergo frequent modifications. The emergence of new languages with strong type systems, such as Rust and TypeScript, and the addition of static type checkers to previously dynamically typed languages, like MyPy for Python and static types for PHP and Ruby, reflect this trend.
 
-Statically typed languages manifest in various paradigms. Functional programming languages, such as ML and Haskell, have inherently embraced static typing. Unlike languages from other paradigms, such as Java and C, functional languages offer two distinct advantages. First, they feature flexible and expressive type systems that allow domain problems to be succinctly modeled at the type level with guarantees of correct behavior upon successful compilation—a capability not easily achieved in other paradigms. Second, they support type inference, enabling rigorous type checking even in the absence of explicit type annotations. This paper employs Haskell as a case study to explore the challenges and solutions associated with enriching the type system experience. Haskell is renowned for its expressive and robust type system, which allows programmers to model complex problems using constructs and relationships within the type system and to develop programs in a type-driven manner. Innovations in type systems originally introduced by Haskell, such as algebraic data types, type inference, and type classes, have been incorporated into mainstream programming languages \cite{Hudak2007-kn, TypeScriptTeam_undated-qk, Klabnik_undated-mp, Griesemer_undated-ff}.
+Statically typed languages manifest in various paradigms. Functional programming languages, such as ML and Haskell, have inherently embraced static typing. Unlike languages from other paradigms, such as Java and C, statically typed functional languages offer two distinct advantages. First, they feature flexible and expressive type systems that allow domain problems to be succinctly modeled at the type level with strong guarantees of correct behavior upon successful compilation. Second, they support type inference, enabling rigorous type checking even in the absence of explicit type annotations. This paper employs Haskell as a case study to explore the challenges and solutions associated with advanced type systems that practice type inference.
 
-    
-Haskell is renowned for its rigorous type system but is equally known for its steep learning curve and the difficulties posed by type errors. Extensive research has sought to alleviate these challenges \cite{Tirronen2015-nr, Chen2014-dz, Heeren2003-kd, Zhang2015-xy, Lerner2007-mu, Zhang2017-tj}. While the Glasgow Haskell Compiler (GHC) provides the advantage of type inference within a robust type system, it often produces type error messages that are confusing to both beginners and experienced users. For example, as illustrated in Fig.~\ref{fig:motivation}, a type mismatch between a {\tt Char} and an integer leads to perplexing errors, particularly for novice users. We have identified three primary issues contributing to the difficulty of interpreting these error messages:
+Haskell is renowned for its expressive and robust type system, which allows programmers to develop programs in a type-driven manner. Innovations in type systems frequently pioneered from Haskell, such as algebraic data types, type inference, and type classes, have been incorporated into mainstream programming languages \cite{Hudak2007-kn, TypeScriptTeam_undated-qk, Klabnik_undated-mp, Griesemer_undated-ff}. Despite the advanced type system, Haskell is equally known for its steep learning curve, unforgiving type checker, and cryptic type errors. Extensive research has sought to alleviate these challenges \cite{Tirronen2015-nr, Chen2014-dz, Heeren2003-kd, Zhang2015-xy, Lerner2007-mu, Zhang2017-tj}. Programmers often find type error messages in Haskell are exessively terse, confusing and misleading. For example, as illustrated in Fig.~\ref{fig:motivation}, a type mismatch between a {\tt Char} and an integer leads to perplexing errors, particularly for novice users. We have identified three primary issues contributing to the difficulty of interpreting these error messages:
 
 \begin{enumerate}
-    \item The errors tend to be biased towards a single potential cause, neglecting other plausible causes.
-    \item Adjusting the suggested location does not always resolve the error entirely.
+    \item The errors are biased towards a single potential cause, neglecting other plausible causes.
+    \item Making changes to the suggested location does not always resolve the error entirely.
     \item Insufficient contextual information is provided, hindering the programmer's ability to understand the underlying rationale of the error message.
 \end{enumerate}
 
 
-    \begin{figure}[ht!]
-        \centering
-        \includegraphics[width=\linewidth]{images/motivation}
-        \caption{Inspecting a type error using the Haskell compiler GHC (Glasgow Haskell Compiler)}
-        \label{fig:motivation}
-    \end{figure}
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\linewidth]{images/motivation}
+    \caption{Inspecting a type error using the Haskell compiler GHC (Glasgow Haskell Compiler)}
+    \label{fig:motivation}
+\end{figure}
 
-To tackle the challenges of diagnosing and resolving type errors in statically typed languages like Haskell, we introduce a novel tool: \textit{Goanna}. Goanna serves as a standalone Haskell type checker and debugging suite, leveraging constraint programming and the concept of Minimal Correct Subset (MCS). Unlike conventional type-checking tools, Goanna enhances error reporting by offering a detailed list of potential causes and suggesting precise locations for corrections. Its distinctive approach, employing Minimal Correction Subsets (MCS), identifies complete sets of locations that represent possible causes, setting it apart from previous type debugging systems (as detailed in Section \ref{sec:related-work}).
+To tackle the challenges of diagnosing and resolving type errors in statically typed languages like Haskell, we introduce a novel tool: \textit{Goanna}. Goanna serves as a standalone Haskell type checker and debugging environment. Unlike conventional type-checking tools, Goanna improves error reporting by offering a comprehensive list of potential causes and suggesting accurate locations of causes. Goanna implements programming slicing and constraint programming techniques. Particularly, Goanna uses  Minimal Correction Subsets (MCS), identifies complete sets of locations that represent possible causes, setting it apart from previous type debugging systems (as detailed in Section \ref{sec:related-work}).
 
-To further augment Goanna's capacity for type-error resolution, we introduce optimization strategies (Section~\ref{sub:optimization}) that filter out unproductive suggestions, along with ranking heuristics (Section~\ref{sub:ranking}) that prioritize the most probable fixes. Additionally, we present Goanna-IDE, an interactive debugging platform that facilitates efficient navigation and interpretation of Goanna's type error diagnostics.
+To further augment Goanna's capacity for type-error resolution, we introduce optimization strategies (Section~\ref{sub:optimization}) that filter out unhelpful suggestions, along with ranking heuristics (Section~\ref{sub:ranking}) that prioritize the most probable causes. Additionally, we present Goanna-IDE, an interactive programming environment for Haskell that facilitates visualization and easy navigation of Goanna's type error diagnostics.
 
-Our comprehensive corpus studies and benchmarking assess Goanna's accuracy (Section \ref{sub:eval-accuracy}), reliability (Section \ref{sub:eval-conciseness}), and performance (Section \ref{sub:eval-performance}). Results demonstrate that Goanna consistently provides precise error diagnostics and suggests correct fixes among its top recommendations. Though its performance might not always offer instantaneous real-time feedback, it is capable of delivering on-demand diagnoses when deeper analysis is needed.
+We conducted a corpus studies on two datasets to assess Goanna's accuracy (Section \ref{sub:eval-accuracy}) and reliability (Section \ref{sub:eval-conciseness}); while our benchmarking study evaluates Goanna's performance (Section \ref{sub:eval-performance}). Results demonstrate that Goanna consistently provides accurate and reiliable error diagnostics when compare to conventional tools. Goanna shows performance constraint when diagnosing large programs containing complex type errors. However, Goanna is able to provide realtime debugging assistance when working with small to medium programs.
 
 The main contributions of this research are:
 \begin{itemize}
-    \item A categorization of type errors based on their minimal formations.
+    \item A categorization of type errors that help reasoning about the their causes and complexity.
     \item Goanna, a Haskell type checker with advanced error reporting capabilities.
-    \item Goanna-IDE, an interactive environment for debugging Haskell type errors.
+    \item Goanna-IDE, an interactive Haskell development environment that support debugging type errors using Goanna's diagnositics.
     \item A rigorous evaluation of Goanna's accuracy, reliability, and performance.
 \end{itemize}
 
-The techniques employed in Goanna, such as MCS enumeration and the  ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is deliberately designed for adaptability across languages with similar type systems.
+The techniques employed in Goanna, such as MCS enumeration and the ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is deliberately designed for adaptability across languages with similar type systems.
 
 \section*{A categorization of type errors} \label{sec:categories-1}
 
@@ -755,7 +735,9 @@ The computational demands of Goanna's accuracy stem from the need for Minimal Un
 
 Performance bottlenecks are largely due to MUS enumeration rather than parsing or static analysis, as these processes are negligible for reasonably sized programs. The primary factor is the number of MUSes produced.
 
-\paragraph{Multi-step Type Errors:} We generated a series of programs containing increasing steps of multi-step type errors, padded to the same number of syntax nodes. For a program with 200 syntax nodes, it takes 0.275 seconds to diagnose; with 30 steps, it requires 2.8 seconds (Fig.~\ref{fig:multi-step-time}).
+\paragraph{Multi-step Type Errors}
+
+We generated a series of programs containing increasing steps of multi-step type errors, padded to the same number of syntax nodes. For a program with 200 syntax nodes, it takes 0.275 seconds to diagnose; with 30 steps, it requires 2.8 seconds (Fig.~\ref{fig:multi-step-time}).
 
 \begin{figure}[ht]
     \centering
@@ -764,7 +746,9 @@ Performance bottlenecks are largely due to MUS enumeration rather than parsing o
     \label{fig:multi-step-time}
 \end{figure}
 
-\paragraph{Multi-witness Type Errors:} Multi-witness errors were generated using the form \lstinline{x y = case y of 1 -> 1; '2' -> 2; '3' -> 3}. With 30 error locations and 208 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds (Fig.~\ref{fig:multi-witness-time}).
+\paragraph{Multi-witness Type Errors}
+
+Multi-witness errors were generated using the form \lstinline{x y = case y of 1 -> 1; '2' -> 2; '3' -> 3}. With 30 error locations and 208 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds (Fig.~\ref{fig:multi-witness-time}).
 
 \begin{figure}[ht]
     \centering
@@ -773,7 +757,9 @@ Performance bottlenecks are largely due to MUS enumeration rather than parsing o
     \label{fig:multi-witness-time}
 \end{figure}
 
-\paragraph{Multi-party Type Errors:} Multi-party type errors, often multiple simple errors intertwined, are computationally intensive. We generated programs increasing the number of parties from 3 to 30. For 30 error locations and 200 syntax nodes, diagnosis requires 3.15 seconds; with 1000 nodes, it takes over two minutes (Fig.~\ref{fig:multi-party-time}).
+\paragraph{Multi-party Type Errors}
+
+Multi-party type errors, often multiple simple errors intertwined, are computationally intensive. We generated programs increasing the number of parties from 3 to 30. For 30 error locations and 200 syntax nodes, diagnosis requires 3.15 seconds; with 1000 nodes, it takes over two minutes (Fig.~\ref{fig:multi-party-time}).
 
 \begin{lstlisting}[language=Haskell, caption=Multi-party Haskell Example, label={lst:eval-multi-party}]
 data X = X
@@ -877,7 +863,7 @@ While LLMs are getting more and more accurate with each iteration, some doubt wh
 
 \section{Future Work}\label{sec:future-work}
 
-\paragraph{\textbf{Planned User Studies and Research Questions}}
+\subsection{Planned User Studies and Research Questions}
 
 Evaluating Goanna with human participants is crucial for obtaining qualitative insights into its effectiveness. In preliminary workshop studies, participants exhibited positive reactions after using Goanna. However, a rigorous human study based on realistic debugging use cases is planned for the near future. We aim to investigate the following questions:
 
@@ -886,11 +872,11 @@ Evaluating Goanna with human participants is crucial for obtaining qualitative i
   \item Which user interface paradigms effectively leverage Goanna's strengths (such as accessing all possible error causes) and mitigate its limitations (such as slow response times with large programs)?
 }
 
-\paragraph{\textbf{Suggesting Syntax Approaches}}
+\subsection{Suggesting Syntax Approaches}
 
 An exciting avenue for enhancement is the generation of syntax change suggestions in addition to type change suggestions. As noted in \cite{Chen2014-dz}, syntax changes pose significant challenges. However, with recent advancements in generative models and research progress in ML-based type error resolution \cite{Seidel2017-uf}, the development of accurate syntax change suggestions is becoming increasingly feasible.
 
-\paragraph{\textbf{Supporting Additional Languages}}
+\subsection{Supporting Additional Languages}
 
 Expanding Goanna's capabilities to encompass other functional programming languages beyond Haskell is also a consideration. Languages such as Scala and OCaml, which practice similar type system to Haskell, can directly benefit from Goanna's functionalities. We also intend to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust in the future.
 
