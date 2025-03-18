@@ -78,6 +78,7 @@
 
 \raggedbottom
 %%\unnumbered% uncomment this for unnumbered level heads
+
 \begin{document}
 
 \title[Article Title]{Goanna: The Most Reasonable Type Error Debugging}
@@ -95,12 +96,13 @@
 
 \author{\fnm{Tim} \sur{Dwyer}}\email{tim.dwyer@monash.edu}
 
-\author{\fnm{Peter} \sur{Stuckey}}\email{peter.stuckey@monash.edu}
+\author{\fnm{Peter J.} \sur{Stuckey}}\email{peter.stuckey@monash.edu}
 
 \author{\fnm{John} \sur{Grundy}}\email{john.grundy@monash.edu}
 
 
 % \affil[1,2,3,4]{\orgdiv{Department}, \orgname{Monash University}, \orgaddress{\street{Street}, \city{City}, \postcode{100190}, \state{State}, \country{Country}}}
+
 \affil{ \orgname{Monash University}, \orgaddress{\country{Australia}}}
 
 \abstract{
@@ -149,7 +151,7 @@ The main contributions of this research are:
 
 The techniques employed in Goanna, such as MCS enumeration and the ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is deliberately designed for adaptability across languages with similar type systems.
 
-\section*{A categorization of type errors} \label{sec:categories-1}
+\section*{Categorises of type errors} \label{sec:categories-1}
 
 To address the challenges of explaining type errors to programmers and helping them resolve these errors, we have identified some common patterns of type errors can be formed from the simplest form. And more complex type errors we see on daily basis are formed from these simple forms.
 
@@ -169,7 +171,7 @@ Multi-step type errors are more common in practice. They occur natually when pro
 
 \begin{figure}[htbp]
   \includegraphics[width=\linewidth]{Multi-Step}
-  \caption[This illustration depicts a multi-step type error in Haskell]{
+  \caption{
     \label{fig:multi-step-example}
     A multi-step type error in Haskell. In the program (left panel), the string literal \texttt{"True"} is assigned to the variable \texttt{a} on line 1, followed by the assignment of \texttt{a}'s value to variable \texttt{b} on line 2. Subsequently, on line 3, the program attempts to use \texttt{b} as a boolean condition in an \texttt{if} expression. The error analysis can be visualized as a "chain" of reasoning, represented by the continuous line (right panel), tracing the propagation of the type mismatch through the sequence of assignments and usage. }
 \end{figure}
@@ -181,47 +183,23 @@ Multi-witness type errors are also common in practice. They often occur when cha
 
 \begin{figure}[htbp]
 \centering  \includegraphics[width=\linewidth]{Multi-Witness}
-  \caption[This illustration depicts a multi-witness type error in Haskell]{
+  \caption{
     \label{fig:multi-witness-example}
     A multi-witness type error in Haskell. In the source code (Left), a type conflict arises from the \texttt{case} expression, which could be interpreted as \texttt{Char} based on the value in line 2, or as a \texttt{String} based on the values in lines 3, 4, and 5. The type conflict is graphically illustrated (Right) with \texttt{String} values marked in pink and the \texttt{Char} value in blue. The majority of \texttt{String} value witnesses suggest the lone \texttt{Char} literal \texttt{'I'} on line 2 might be a typographical error. This discrepancy underscores the significance of witness count in identifying the likely error source.}
 \end{figure}
 
 A \textbf{multi-party type error} involves more than two potential type assignments, each supported by distinct location.  Fig.~\ref{fig:multi-party-example} presents a typical multi-party type error: the expression {\tt d} can not be assigned a type because 3 locations on line 1 suggest 3 potential types for \texttt{d}. In practice, addressing such errors requires breaking them down into multiple type errors of simpler forms. 
 
-Multi-party type errors are not common in real life programs,. They can happen when programmers reverse the order of two input arguments. 
+Multi-party type errors are not common in real life programs. They can happen when programmers mix the order of multiple arguments in function application.  
 
 \begin{figure}[htbp]
 \centering  \includegraphics[width=\linewidth]{Multi-Party}
-  \caption[This illustration depicts a multi-party type error in Haskell]{
+  \caption{
     \label{fig:multi-party-example}
     A multi-party type error in Haskell (Left), where the list \texttt{d} could potentially be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The disagreement is visually represented (Right) by three distinct colors, each corresponding to the cause of one of the possible types. This scenario differs from previous examples as resolving the type error requires adjustments at multiple locations within the code, not just a single change.
        }
 \end{figure}
   
-\section{Related Work} 
-    \label{sec:related-work}
-    In this section, we survey the corpus of work that Goanna built upon and was inspired by. We first review the work that is built on a theoretical foundation similar to that of Goanna. We then examine studies that share similar aims and offer a debugging experience comparable to Goanna's. Finally, we delve into research on program slicing and discuss how Goanna extends the concept of slicing and distinguishing itself from its predecessors.
-
-    \subsection{MCS enumeration}
-	
-    MCS enumeration has been extensively studied in the field of error localization across various domains. MCS is used to optimize package management system \cite{Ignatiev2014-nr} and to explain decisions made by machine learning algorithms \cite{Marques-Silva2023-nk}.
-    
-    
-    In the specific context of type error diagnosis and resolution, several related approaches have been explored. It is important to examine the strengths and weaknesses of Goanna in the context of these areas.
-
-    One notable work by Lamraoui et al. introduced a tool \cite{Lamraoui2016-wr} that utilizes the capability of MCS to localize multiple faults and identify software defects using unit tests. Their approach demonstrated the effectiveness of MCS in pinpointing errors within a program. Similarly, Bekkouche et al. conducted a relevant study  \cite{Bekkouche2015-is}  on MCS utilization for locating program errors in while-loop programs. Their findings showed improved efficiency compared to SAT-based approaches. Although showing strength in programming language static analysis, MCS-based fault localization has not been previously applied at the type system level. Goanna distinguishes itself as the first tool to explore this approach within the realm of type error diagnosis and resolution.
-
-    \subsection{Suggesting changes to type errors}
-   Lerner et al. proposed Seminal \cite{Lerner2007-mu}, using syntax mutation and binary search to find appropriate syntax changes to program errors. The advantage of Seminal is that it's capable of suggesting direct syntax changes to common mistakes (e.g., mistakingly swapping the order of function arguments). However, it is impossible for Seminal to provide the complete set of all potential fixes. Nor does it guarantee a suggested solution is minimal syntax change.
-   
-   Counter-factual typing (CFT) \cite{Chen2014-dz,Chen2020-ad} uses a variation-based type system; it is capable of suggesting the correct type for all possible. CFT shares many capabilities with Goanna, CFT is able to suggest multiple-location changes, CFT uses similar ranking heuristics. Goanna is able to produce an in-depth analysis of the ill-type program, such as type error isolation. CFT and Goanna both aim to produce a complete set of potential fixes, Goanna employs a set of effective algorithms to reduce the exponential number of potential fixes without reducing the quality of suggestions. 
-   
-   SHErrLoc \cite{Zhang2015-xy} uses constraints as the underlying to perform type inference and type error diagnoses. SHErrLoc is able to suggest multiple possible fixes of the type error and rank them based on heuristics. Unlike Goanna's approach of using a general-purpose constraint language, SHErrLoc relies on GHC's internal constraints and then translates them into SCL (a custom-made constraint language). On the technical side, this approach relies heavily on modification of the compiler and does not remain reliable with later GHCs. Most importantly, there is no way to interact directly with the solver. This renders the kind of constraint manipulation in Goanna and SHErrLoc impossible. Goanna is able to perform type reconstruction for ill-typed programs, that is, finding the most concrete types for all expressions for each potential solution using the Maximal Satisfiable Subsets. SHErrLoc focuses on finding the locations only.
-
-
-\subsection{Type Error Slicing}
-
-Type error slicing \cite{Haack2004-fr} is a technique to identify all necessary locations of a type error that is necessary for programmers to diagnose the root cause. It has been studied in many studies ever since \cite{Tip2001-qn, Heeren2003-kd}. These studies all use Minimal Unsatisfiable Subset (MUS) to ensure the \textit{completeness} and \textit{minimality}. The drawback of type error slicing is that it often produces too many locations.  Chameleon \cite{Stuckey2003-pz,Fu2021-xd} improved type error slicing by allowing programmers to interactively show the partial MUS by choosing their own assumptions. Compared to these tools that base their analysis on a single MUS, Goanna effectively utilizes all possible MUSes. This allows Goanna to enhance its suggestions based on the improved knowledge of the underlying type of error. For example, it uses the number of MUSes a location appears in to rank how likely the location is part of the root cause. This is not possible with a single MUS.  
 
 
 \section{Goanna-IDE Walkthrough} \label{walkthrough}
@@ -366,14 +344,14 @@ In this section we  demonstrate Goanna's features using some real world examples
      \begin{figure}[ht!]
         \centering
         \includegraphics[width=\linewidth]{images/Enumeration-Example}
-        \caption[An example of Goanna MCS Enumeration]{\textbf{An example of Goanna MCS Enumeration.} From the set of constraints (B) generated from the Haskell program(A), Goanna obtained 2 MUSes, 3 MCSes, and 3 MSSes. }
+        \caption{\textbf{An example of Goanna MCS Enumeration.} From the set of constraints (B) generated from the Haskell program(A), Goanna obtained 2 MUSes, 3 MCSes, and 3 MSSes. }
         \label{fig:enumeration-example}
     \end{figure}
     
    For the example in Fig.~\ref{fig:enumeration-example}, Goanna's MCS enumeration system identifies 2 MUSes, 3 MCSes, and 3 MSSes. Following the 3 MCSes, Goanna reports 3 potential causes of the type error: the type annotation and function definition in \texttt{f} (from $MCS_1$), the type annotation alone in \texttt{g} (from $MCS_2$), and the function definition alone in \texttt{g} (from $MCS_3$). 
 
 
-\subsection{Categories of Type Error} \label{sec:categories-2}
+\subsection{Categories of Type Error in Constraint Interpretation} \label{sec:categories-2}
 
 Building upon the concept of the Minimal Unsatisfiable Subset (MUS), we revisit and refine the 3 categories of type errors proposed in Section \ref{sec:categories-1}. This categorization directly relates to the constraint representations of type errors and the number of MUSes found within the system. This connection aims to bridge the gap between the intuitive debugging approaches of human programmers and the formal analysis offered by constraint satisfiability.
 
@@ -381,7 +359,8 @@ Building upon the concept of the Minimal Unsatisfiable Subset (MUS), we revisit 
 
 \begin{figure}[hbt]
   \centering \includegraphics[width=\linewidth]{images/Multi-Step-MUS}
-  \caption[Illustration of a multi-step type error in the context of MUSes]{Illustration of a multi-step type error influenced by potential issues in the definition of \texttt{a}, \texttt{b}, or the conditional expression involving \texttt{b}. These elements are logically connected as depicted (Top Right). The analysis of the source code yields 7 constraints (Bottom Left), from which only one Minimal Unsatisfiable Subset (MUS) is identified (Bottom Right).}
+  \caption {A multi-step type error influenced by potential issues in the definition of \texttt{a}, \texttt{b}, or the conditional expression involving \texttt{b}. These elements are logically connected as depicted (Top Right). The analysis of the source code yields 7 constraints (Bottom Left), from which only one Minimal Unsatisfiable Subset (MUS) is identified (Bottom Right).
+  }
   \label{fig:multi-step-2}
   \end{figure}
 
@@ -393,8 +372,9 @@ Multi-step type errors involve a sequence of logical deductions that link one co
 \begin{figure}[hbt]
     \centering
 \includegraphics[width=\linewidth]{images/Multi-Witness-MUS}
-  \caption[Illustration of a multi-witness type error in the context of MUSes]{\label{fig:multi-witness-2}
-  Analysis of a multi-witness type error, where the \texttt{case} expression could be interpreted as type \texttt{Char} or \texttt{String}. This scenario showcases a type conflict with three witnesses against one witness (Top Right). From the source code, 9 constraints are established (Bottom Left), resulting in 3 identified MUSes. Interestingly, all MUSes include constraint C3, suggesting its pivotal role in favoring the possibility that the \texttt{Char} type is erroneous.}
+  \caption{\label{fig:multi-witness-2}
+    Analysis of a multi-witness type error, where the \texttt{case} expression could be interpreted as type \texttt{Char} or \texttt{String}. This scenario showcases a type conflict with three witnesses against one witness (Top Right). From the source code, 9 constraints are established (Bottom Left), resulting in 3 identified MUSes. Interestingly, all MUSes include constraint C3, suggesting its pivotal role in favoring the possibility that the \texttt{Char} type is erroneous.
+  }
   \end{figure}
 
 A multi-witness type error occurs when multiple locations (witnesses) on one side of a conflict suggest the same type assignment. When viewed as a constraint system, a multi-witness type error contains multiple MUSes. The precise number of MUSes depends on the number of witnesses at each endpoint. If a type error involves $m$ witnesses on one side and $n$ on the other, there will be a total of $m \times n$ MUSes. For example, in Fig.~\ref{fig:multi-witness-2}, there are three MUSes: $\{C3, C5\}, \{C3, C7\}, \{C3, C9\}$. It is crucial to note that the constraint C3 appears in every MUS, signaling a likely root cause.
@@ -404,7 +384,7 @@ A multi-witness type error occurs when multiple locations (witnesses) on one sid
 \begin{figure}[hbt]
   \centering
   \includegraphics[width=\linewidth]{images/Multi-Party-MUS}
-  \caption[Illustration of a multi-party type error in the context of MUSes]{\label{fig:multi-party-2} Analysis of a multi-party type error regarding the list \texttt{d}, which could alternately be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The conflict is depicted as a disagreement among three parties (Top Right). An analysis based on the source code generates 5 constraints (Bottom Left), leading to 3 distinct Minimal Unsatisfiable Subsets (MUSes). Notably, this scenario differs from the multiple witness type error as no single constraint appears across all MUSes.}
+  \caption{\label{fig:multi-party-2} Analysis of a multi-party type error regarding the list \texttt{d}, which could alternately be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The conflict is depicted as a disagreement among three parties (Top Right). An analysis based on the source code generates 5 constraints (Bottom Left), leading to 3 distinct Minimal Unsatisfiable Subsets (MUSes). Notably, this scenario differs from the multiple witness type error as no single constraint appears across all MUSes.}
   \end{figure}
 
   A multi-party type error features several irreconcilable type assignments stemming from different locations within the source code. Like multi-witness errors, multi-party errors contain multiple MUSes. In the example shown in Fig.~\ref{fig:multi-party-2}, there are three MUSes: $\{C3, C4\}, \{C3, C5\}, \{C4, C5\}$. Unlike the multi-witness scenario, no single element appears across all MUSes, suggesting a more complex type conflict scenario. 
@@ -861,6 +841,31 @@ While LLMs are getting more and more accurate with each iteration, some doubt wh
   \item {\textbf{Error Tutoring and Resolution}: Theory-based tools could identify errors in manually written code, with LLMs suggesting syntax corrections. This combines the precise error detection from traditional theory-based tools with the ability of LLMs to generate effective syntax changes, surpassing traditional tools in this domain.}
 }
 
+\section{Related Work} 
+    \label{sec:related-work}
+    In this section, we survey the corpus of work that Goanna built upon and was inspired by. We first review the work that is built on a theoretical foundation similar to that of Goanna. We then examine studies that share similar aims and offer a debugging experience comparable to Goanna's. Finally, we delve into research on program slicing and discuss how Goanna extends the concept of slicing and distinguishing itself from its predecessors.
+
+    \subsection{MCS enumeration}
+	
+    MCS enumeration has been extensively studied in the field of error localization across various domains. MCS is used to optimize package management system \cite{Ignatiev2014-nr} and to explain decisions made by machine learning algorithms \cite{Marques-Silva2023-nk}.
+    
+    
+    In the specific context of type error diagnosis and resolution, several related approaches have been explored. It is important to examine the strengths and weaknesses of Goanna in the context of these areas.
+
+    One notable work by Lamraoui et al. introduced a tool \cite{Lamraoui2016-wr} that utilizes the capability of MCS to localize multiple faults and identify software defects using unit tests. Their approach demonstrated the effectiveness of MCS in pinpointing errors within a program. Similarly, Bekkouche et al. conducted a relevant study  \cite{Bekkouche2015-is}  on MCS utilization for locating program errors in while-loop programs. Their findings showed improved efficiency compared to SAT-based approaches. Although showing strength in programming language static analysis, MCS-based fault localization has not been previously applied at the type system level. Goanna distinguishes itself as the first tool to explore this approach within the realm of type error diagnosis and resolution.
+
+    \subsection{Suggesting changes to type errors}
+   Lerner et al. proposed Seminal \cite{Lerner2007-mu}, using syntax mutation and binary search to find appropriate syntax changes to program errors. The advantage of Seminal is that it's capable of suggesting direct syntax changes to common mistakes (e.g., mistakingly swapping the order of function arguments). However, it is impossible for Seminal to provide the complete set of all potential fixes. Nor does it guarantee a suggested solution is minimal syntax change.
+   
+   Counter-factual typing (CFT) \cite{Chen2014-dz,Chen2020-ad} uses a variation-based type system; it is capable of suggesting the correct type for all possible. CFT shares many capabilities with Goanna, CFT is able to suggest multiple-location changes, CFT uses similar ranking heuristics. Goanna is able to produce an in-depth analysis of the ill-type program, such as type error isolation. CFT and Goanna both aim to produce a complete set of potential fixes, Goanna employs a set of effective algorithms to reduce the exponential number of potential fixes without reducing the quality of suggestions. 
+   
+   SHErrLoc \cite{Zhang2015-xy} uses constraints as the underlying to perform type inference and type error diagnoses. SHErrLoc is able to suggest multiple possible fixes of the type error and rank them based on heuristics. Unlike Goanna's approach of using a general-purpose constraint language, SHErrLoc relies on GHC's internal constraints and then translates them into SCL (a custom-made constraint language). On the technical side, this approach relies heavily on modification of the compiler and does not remain reliable with later GHCs. Most importantly, there is no way to interact directly with the solver. This renders the kind of constraint manipulation in Goanna and SHErrLoc impossible. Goanna is able to perform type reconstruction for ill-typed programs, that is, finding the most concrete types for all expressions for each potential solution using the Maximal Satisfiable Subsets. SHErrLoc focuses on finding the locations only.
+
+
+\subsection{Type Error Slicing}
+
+Type error slicing \cite{Haack2004-fr} is a technique to identify all necessary locations of a type error that is necessary for programmers to diagnose the root cause. It has been studied in many studies ever since \cite{Tip2001-qn, Heeren2003-kd}. These studies all use Minimal Unsatisfiable Subset (MUS) to ensure the \textit{completeness} and \textit{minimality}. The drawback of type error slicing is that it often produces too many locations.  Chameleon \cite{Stuckey2003-pz,Fu2021-xd} improved type error slicing by allowing programmers to interactively show the partial MUS by choosing their own assumptions. Compared to these tools that base their analysis on a single MUS, Goanna effectively utilizes all possible MUSes. This allows Goanna to enhance its suggestions based on the improved knowledge of the underlying type of error. For example, it uses the number of MUSes a location appears in to rank how likely the location is part of the root cause. This is not possible with a single MUS.  
+
 \section{Future Work}\label{sec:future-work}
 
 \subsection{Planned User Studies and Research Questions}
@@ -879,6 +884,8 @@ An exciting avenue for enhancement is the generation of syntax change suggestion
 \subsection{Supporting Additional Languages}
 
 Expanding Goanna's capabilities to encompass other functional programming languages beyond Haskell is also a consideration. Languages such as Scala and OCaml, which practice similar type system to Haskell, can directly benefit from Goanna's functionalities. We also intend to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust in the future.
+
+
 
 \section{Summary} \label{sec:conclusion}
 
