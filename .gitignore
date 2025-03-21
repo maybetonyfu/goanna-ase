@@ -5,3 +5,5 @@ main.pdf
 auto
 .DS_Store
 _region_*
+*.bbl
+*.blg

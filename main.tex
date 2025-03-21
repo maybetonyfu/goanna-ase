@@ -151,57 +151,6 @@ The main contributions of this research are:
 
 The techniques employed in Goanna, such as MCS enumeration and the ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is deliberately designed for adaptability across languages with similar type systems.
 
-\section*{Categorises of type errors} \label{sec:categories-1}
-
-To address the challenges of explaining type errors to programmers and helping them resolve these errors, we have identified some common patterns of type errors can be formed from the simplest form. And more complex type errors we see on daily basis are formed from these simple forms.
-
-A \textbf{simple type error} simplest type error are the ones involve two fragments of the program that can not agree on a type assignments. Example like Listing \ref{lst:atomic-error} shows such an error. In the example, {\tt x} can be inferred as either {\tt Int} or {\tt Char} type based on line 1 or line 2. 
-
-\begin{lstlisting}[language=Haskell, caption=The simplest form of type error, label={lst:atomic-error}]
-  x :: Int
-  x = '3'
-\end{lstlisting}
-
-In practice, this category of type error is very easy to resolve. The 2 offending locations are reletively close to each other, and they do not require special mental bookkeeping to trace back to the root cause. 
-
-
-A \textbf{multi-step type error} involves a chain of reasining steps to derive the error. Fig.~\ref{fig:multi-step-example}) illustrates the chains of reasoning in the assignment of a (Line 1), the equivalence of a (Line 1 and Line 2), the assignment of b (Line 2), and the equivalence of b (Line 2 and Line 3). Each step restrict the possibility of the typing more. Adding them all together there is no possible solution to assign types to this program. Type theoretically speaking, these chains are the unification operations performed by the type checker. Removing any step from the chains will resolve the conflict.
-
-Multi-step type errors are more common in practice. They occur natually when programs develop layers of indirections or abstractions. They can cause confusion to programmers because the error can be reported at one place but the root cause is at a distant location. 
-
-\begin{figure}[htbp]
-  \includegraphics[width=\linewidth]{Multi-Step}
-  \caption{
-    \label{fig:multi-step-example}
-    A multi-step type error in Haskell. In the program (left panel), the string literal \texttt{"True"} is assigned to the variable \texttt{a} on line 1, followed by the assignment of \texttt{a}'s value to variable \texttt{b} on line 2. Subsequently, on line 3, the program attempts to use \texttt{b} as a boolean condition in an \texttt{if} expression. The error analysis can be visualized as a "chain" of reasoning, represented by the continuous line (right panel), tracing the propagation of the type mismatch through the sequence of assignments and usage. }
-\end{figure}
-
-A \textbf{multi-witness type error} is like simple type error, but instead of each type assignment is supported by one location, each type assignment can be supported by multiple locations . For instance, as shown in Fig.~\ref{fig:multi-witness-example}, multiple locations (lines 3,4,5) support that {\tt a} has the type {\tt Int -> String}. On the other hand, a single location (line 2) shows that {\tt a} has the type {\tt Int -> Char}.  Clarifying and juxtaposing this discrepancy in witnesses is key to supporting understanding this type of error.
-
-Multi-witness type errors are also common in practice. They often occur when changes to the definition of one fragment of the program, and this fragment is referenced by multiple places. Like multi-step type errors, they too often require prorgrammers to search many locations to arrive at the correct resolution.
-
-
-\begin{figure}[htbp]
-\centering  \includegraphics[width=\linewidth]{Multi-Witness}
-  \caption{
-    \label{fig:multi-witness-example}
-    A multi-witness type error in Haskell. In the source code (Left), a type conflict arises from the \texttt{case} expression, which could be interpreted as \texttt{Char} based on the value in line 2, or as a \texttt{String} based on the values in lines 3, 4, and 5. The type conflict is graphically illustrated (Right) with \texttt{String} values marked in pink and the \texttt{Char} value in blue. The majority of \texttt{String} value witnesses suggest the lone \texttt{Char} literal \texttt{'I'} on line 2 might be a typographical error. This discrepancy underscores the significance of witness count in identifying the likely error source.}
-\end{figure}
-
-A \textbf{multi-party type error} involves more than two potential type assignments, each supported by distinct location.  Fig.~\ref{fig:multi-party-example} presents a typical multi-party type error: the expression {\tt d} can not be assigned a type because 3 locations on line 1 suggest 3 potential types for \texttt{d}. In practice, addressing such errors requires breaking them down into multiple type errors of simpler forms. 
-
-Multi-party type errors are not common in real life programs. They can happen when programmers mix the order of multiple arguments in function application.  
-
-\begin{figure}[htbp]
-\centering  \includegraphics[width=\linewidth]{Multi-Party}
-  \caption{
-    \label{fig:multi-party-example}
-    A multi-party type error in Haskell (Left), where the list \texttt{d} could potentially be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The disagreement is visually represented (Right) by three distinct colors, each corresponding to the cause of one of the possible types. This scenario differs from previous examples as resolving the type error requires adjustments at multiple locations within the code, not just a single change.
-       }
-\end{figure}
-  
-
-
 \section{Goanna-IDE Walkthrough} \label{walkthrough}
 In this section we  demonstrate Goanna's features using some real world examples. To showcase the debugging features,  we developed Goanna-IDE, a type error debugging interface for Haskell. Goanna-IDE is designed around the pitfalls of common typecheckers and the different categories of type errors. It make extensive use of Goanna's type error diagnosis through visualization and interactivity. Goanna-IDE provides comprehensive diagnostic error messages for type errors in Haskell and allows programmers to interactively explore their options. An online demo of Goanna-IDE is available for evaluation at \cite{Fu2023-bo}. Goanna-IDE includes a file explorer, a text editor, and a debugging panel. Goanna-IDE provides the following features when type errors are encountered:
 
@@ -215,7 +164,6 @@ In this section we  demonstrate Goanna's features using some real world examples
     \subsection{Examples of Diagnosing Type Errors with Goanna-IDE}
 
     For the type error in the motivating example, Goanna shows 6 possible causes of the error (see top right corner of Fig.~\ref{fig:goanna-example-1}). When focussing on the cause suggested by GHC, instead of highlighting only the literal \texttt{1}, Goanna reports all 3 literals that needed to be changed all at once if the programmer chooses to address this cause. In addition, Goanna also indicates that these integer literals need to be changed to \texttt{Char} type using the inlay type hints on line 1, largely narrowing down the potential ideal fixes. 
-    
 
     \begin{figure}[ht!]
         \centering
@@ -387,7 +335,7 @@ A multi-witness type error occurs when multiple locations (witnesses) on one sid
   \caption{\label{fig:multi-party-2} Analysis of a multi-party type error regarding the list \texttt{d}, which could alternately be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The conflict is depicted as a disagreement among three parties (Top Right). An analysis based on the source code generates 5 constraints (Bottom Left), leading to 3 distinct Minimal Unsatisfiable Subsets (MUSes). Notably, this scenario differs from the multiple witness type error as no single constraint appears across all MUSes.}
   \end{figure}
 
-  A multi-party type error features several irreconcilable type assignments stemming from different locations within the source code. Like multi-witness errors, multi-party errors contain multiple MUSes. In the example shown in Fig.~\ref{fig:multi-party-2}, there are three MUSes: $\{C3, C4\}, \{C3, C5\}, \{C4, C5\}$. Unlike the multi-witness scenario, no single element appears across all MUSes, suggesting a more complex type conflict scenario. 
+  A multi-party type error features several irreconcilable type assignments stemming from different locations within the source code. Like multi-witness errors, multi-party errors contain multiple MUSes. In the example shown in Fig.~\ref{fig:multi-party-2}, there are three MUSes: $\{C3, C4\}, \{C3, C5\}, \{C4, C5\}$. Unlike the multi-witness scenario, no single element appears across all MUSes, suggesting a more complex type conflict scenario. Generally, if a multi-party type error contains $n$ parties, then there are $n (n - 1) / 2$ unique MUSes.
 
   
 
@@ -501,14 +449,14 @@ In evaluating Goanna as a type error debugging environment, we aim to address th
 
 \begin{enumerate}
     \item \textbf{RQ1} Can Goanna identify type errors more accurately compared to traditional tools?
-    \item \textbf{RQ2} How quickly can Goanna provide these type error diagnoses?
+    \item \textbf{RQ2} How long does it take Goanna to provide these type error diagnoses?
 \end{enumerate}
 
-To answer RQ1, we conducted a corpus study on defective Haskell programs compiled from online sources and research papers. For RQ2, we performed benchmarks using generated Haskell programs with controlled properties.
+To answer {\bf RQ1}, we conducted a corpus study on defective Haskell programs compiled from online channels and research papers. For {\bf RQ2}, we performed benchmarks using generated Haskell programs with controlled properties.
 
-\subsection{The Dataset} \label{sub:dataset}
+\subsection{The Datasets} \label{sub:dataset}
 
-We compiled two datasets of defective Haskell programs to assess Goanna. The first dataset (N=86), named \texttt{Haskell Community}, was sourced from Haskell online discussions since 2018, each containing one or more type errors. Selected forums were identified as top discussion channels for Haskell users based on a research survey \cite{Fausak2022-zf}. We focused on discussions where authors encountered type errors and sought help, including only those with accepted solutions by the original authors. The second dataset (N=67), called \textit{Haskell Academic}, was compiled from peer-reviewed research papers analyzing Haskell type errors.
+We compiled two datasets of defective Haskell programs (N=153) for running the evaluation. The first dataset (N=86), named \texttt{Haskell Community}, was sourced from Haskell online discussions forums, each containing one or more type errors. These include StackOverflow, Reddit, and Discord (Table. \ref{tab:haskell-community}),  top communications channels for Haskell users based on a research survey \cite{Fausak2022-zf}. We focused on discussions where authors encountered type errors and sought help, and including only those with accepted solutions by the original authors. The second dataset (N=67), called \textit{Haskell Academic}, was compiled from peer-reviewed research papers (Table. \ref{tab:haskell-research}) that are related to Haskell type errors.
 
 Program lengths ranged from 1 to 64 lines of code (mean=20, median=20). These programs covered a variety of themes, including basic syntax (14 files), lists (28 files), tuples (5 files), algebraic data types (22 files), higher-order functions (17 files), monadic operations and do notation (9 files), type classes (6 files), and built-in/library functions (24 files). This thematic distribution aligns with the different causes of type errors from Tirronen's study \cite{Tirronen2015-nr}.
 
@@ -664,9 +612,9 @@ Program lengths ranged from 1 to 64 lines of code (mean=20, median=20). These pr
 
 \subsection{Accuracy and Reliability} \label{sub:eval-accuracy}
 
-We define accuracy in type error diagnosis as whether the reported error aligns with the user's real intention, while reliability indicates whether the type error can be resolved by making suitable changes to the reported location. For each program, we compare Goanna's error diagnosis against the oracle answer. A diagnosis is deemed accurate if its suggested fix matches the accepted answer in terms of location. It is considered reliable if the type error can be resolved when the reported location is changed to a value of the bottom type (\textit{undefined} in Haskell).
+We define accuracy in type error diagnosis as whether the reported error aligns with the user's real intention. Similarly, reliability indicates whether the type error can be resolved by making suitable changes to the reported location. An error diagnosis can be reliable but accurate. For each defective program in our datasets, we compare Goanna's error diagnosis against the oracle answer to measure the overall accuracy. A diagnosis is deemed accurate if its suggested fix matches the accepted answer in all of its reported locations. It is considered reliable if the type error can be resolved when the reported locations are changed to values of the bottom type (\textit{undefined} in Haskell).
 
-We compared Goanna with the Glasgow Haskell Compiler (GHC) version 9.4 \cite{Gamari_undated-zu} and Helium \cite{Hage2023-kk} version 1.8. GHC is the most widely used Haskell compiler, known for its comprehensive capabilities and efficiency. Helium is noted for producing high-quality error messages \cite{Heeren2003-kd}. Because Goanna suggests multiple potential fixes, we included two variations: Goanna-1 (considering only the top suggestion) and Goanna-3 (considering the top three suggestions).
+We compared Goanna with the Glasgow Haskell Compiler (GHC) version 9.4 \cite{Gamari_undated-zu} and Helium \cite{Hage2023-kk} version 1.8. GHC is the most widely used Haskell compiler, known for its comprehensive capabilities and efficiency. Helium is another well-regarded Haskell compiler, noted for producing high-quality error messages \cite{Heeren2003-kd}. Because Goanna suggests multiple potential causes, and it technically always include the accurate cause in its diagnositics. Therefore, in this comparason, we only included two variations: Goanna-1 (considering only the top suggestion) and Goanna-3 (considering the top three suggestions).
 
 \begin{figure}[ht!]
     \centering
@@ -687,13 +635,12 @@ We compared Goanna with the Glasgow Haskell Compiler (GHC) version 9.4 \cite{Gam
     \label{fig:comparison}
 \end{figure}
 
-\textbf{Accuracy:} As seen in Fig.~\ref{fig:accuracy}, GHC's accuracy is the lowest among the tools. Goanna-1 outperforms both GHC and Helium with an accuracy of 69.54\%. \textbf{Goanna-3 achieves the highest accuracy at 85.43\%}, maintaining a consistent level across both the \textit{Haskell Academic} and \textit{Haskell Community} datasets. For all errors in the datasets, there were no disagreements among the tools regarding the presence of errors; thus, Goanna did not miss any errors identified by other tools.
+\textbf{Accuracy:} As seen in Fig.~\ref{fig:accuracy}, GHC's accuracy is the lowest among the tools. Goanna-1 outperforms both GHC and Helium with an accuracy of 69.54\%. \textbf{Goanna-3 achieves the highest accuracy at 85.43\%}, maintaining a consistent level across both the \textit{Haskell Academic} and \textit{Haskell Community} datasets, while other tools see drops in accuracy in \textit{Haskell Community}. For all errors in the datasets, there were no disagreements among the tools regarding the presence of errors; thus, Goanna did not miss any errors identified by other tools, nor falsely dentified a well-typed program as defective.
 
-\textbf{Reliability:} As shown in Fig.~\ref{fig:reliability}, GHC is the least reliable (84.55\%), while Helium has slightly better reliability (88.20\%). Goanna-1 and Goanna-3 both achieve the highest reliability (99.93\%). It is noteworthy that the reliability of Goanna-3 is slightly lower than Goanna-1 due to the inclusion of less effective suggestions in subsequent ranks.
+\textbf{Reliability:} As shown in Fig.~\ref{fig:reliability}, GHC is the least reliable (84.55\%), while Helium has modestly better reliability (88.20\%). Goanna-1 and Goanna-3 both achieve the highest reliability (100\%). GHC and Helium are unreliable when multi-witness type errors and multi-party type errors occurs. Both of these tools report only a single location. 
 
 \subsection{Performance} \label{sub:eval-performance}
-
-We assessed Goanna's performance by measuring the time required to generate full type error diagnoses on our datasets. Since Goanna continues until all causes are detected and ranked, there is no distinction between Goanna-1 and Goanna-3 in terms of performance. The results (Fig.~\ref{fig:performance}) indicate that Goanna is slower than other tools: GHC (mean=0.09s, median=0.09s), Helium (mean=0.31s, median=0.31s), and Goanna (mean=0.50s, median=0.42s). Additionally, Goanna exhibits a larger variation in performance.
+Goanna's high accuracy and reliability comes at the tradeoff in its computational complexity. As we can see in Fig. Fig.~\ref{fig:performance}, when  measuring the time required to generate full type error diagnoses on our datasets, Goanna is slower than other tools: GHC (mean=0.09s, median=0.09s), Helium (mean=0.31s, median=0.31s), and Goanna (mean=0.50s, median=0.42s). Additionally, Goanna exhibits a larger variation in performance. Since Goanna continues until all causes are detected and ranked, there is no distinction between Goanna-1 and Goanna-3 in terms of performance.
 
 \begin{figure}[ht!]
     \centering
@@ -702,7 +649,7 @@ We assessed Goanna's performance by measuring the time required to generate full
     \label{fig:performance}
 \end{figure}
 
-The computational demands of Goanna's accuracy stem from the need for Minimal Unsatisfiable Subset (MUS) enumeration, which is constrained by two main factors: (1) the cost of finding a single MUS, which increases with program size due to repeated constraint removal and satisfiability checks, and (2) the total number of MUSes, influenced by the error type. We analyzed performance based on program size and type error nature.
+The computational cost of Goanna lies in Minimal Unsatisfiable Subset (MUS) enumeration, which is constrained by two main factors: (1) the cost of finding a single MUS, which increases with program size. This is because  due to repeated constraint removal and satisfiability checks, and (2) the total number of MUSes, depends on the category/categories of the type error. Therefor, we analyzed performance based on program size and type error category.
 
 \paragraph{Program Size:} Fig.~\ref{fig:node-size} demonstrates the impact of program size on Goanna's performance. For a simple error with two potential fix locations, the diagnosis takes 0.25 seconds with 200 syntax nodes (approximately 20 lines of code) but increases to 7 seconds with 1200 syntax nodes (approximately 120 lines of code). Complex type errors further affect diagnosis time.
 
@@ -713,11 +660,11 @@ The computational demands of Goanna's accuracy stem from the need for Minimal Un
     \label{fig:node-size}
 \end{figure}
 
-Performance bottlenecks are largely due to MUS enumeration rather than parsing or static analysis, as these processes are negligible for reasonably sized programs. The primary factor is the number of MUSes produced.
+It is worth clarifying that performance bottlenecks are largely due to MUS enumeration rather than parsing or static analysis, as these processes are negligible for reasonably sized programs. Also note that other files in the projects that are not being currently inspected and 3rd party library files do not contribute to the computation cost of MUS. Those files are translated into constraints, but are considered as assumptions, and do not participate in the shink process.
 
 \paragraph{Multi-step Type Errors}
 
-We generated a series of programs containing increasing steps of multi-step type errors, padded to the same number of syntax nodes. For a program with 200 syntax nodes, it takes 0.275 seconds to diagnose; with 30 steps, it requires 2.8 seconds (Fig.~\ref{fig:multi-step-time}).
+To better understand the effect of multi-step type error on performance, we generated a series of defective programs, each one containing a multi-step type error. These programs vary in 2 dimensions: the size of the program, ranging from 4 syntax nodes to 1000 syntax nodes, and the number of steps in the type error, ranging from 2 to 30. In this way we can compare the performance on the set of programs who are similar in length but contain type errors involve different number of steps. Fig.~\ref{fig:multi-step-time} plots how 5 of these sets.  It can be seen that the impact of program size is independent from the impact of the number of steps in the errors. For a program with 200 syntax nodes, it takes 0.275 seconds to diagnose; with 30 steps, it requires 2.8 seconds. While for the program with 1000 syntax nodes, 2-step errors takes 5 senconds and 30-step errors take 9 seconds.
 
 \begin{figure}[ht]
     \centering
@@ -728,7 +675,7 @@ We generated a series of programs containing increasing steps of multi-step type
 
 \paragraph{Multi-witness Type Errors}
 
-Multi-witness errors were generated using the form \lstinline{x y = case y of 1 -> 1; '2' -> 2; '3' -> 3}. With 30 error locations and 208 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds (Fig.~\ref{fig:multi-witness-time}).
+Similarly we generated multi-witness type errors that vary in length (4 to 1200) and the number of witnesses (2 - 30) on one side of typing conflict. These errors were generated using the form \lstinline{x y = case y of 1 -> 1; '2' -> 2; '3' -> 3}. With 30 error locations and 200 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds (Fig.~\ref{fig:multi-witness-time}).  We can visually identify the linear growth in computation time, that is because we only increase the number of witness on one side. Recall that for a type error involves $m$ witnesses on one side and $n$ on the other, there will be a total of $m \times n$ MUSes.
 
 \begin{figure}[ht]
     \centering
@@ -739,13 +686,13 @@ Multi-witness errors were generated using the form \lstinline{x y = case y of 1 
 
 \paragraph{Multi-party Type Errors}
 
-Multi-party type errors, often multiple simple errors intertwined, are computationally intensive. We generated programs increasing the number of parties from 3 to 30. For 30 error locations and 200 syntax nodes, diagnosis requires 3.15 seconds; with 1000 nodes, it takes over two minutes (Fig.~\ref{fig:multi-party-time}).
+Multi-party type errors, are often multiple simple errors fused into one, and are the most computationally intensive. Again, we generated programs varies in length (from 5 nodes to 1200 node) and the number of parties (from 3 to 30 parties). To note that this experiment does not mean to be representative of realistic type error. It is highly unlikely to have more than a 3 parties in real world programming, for more than that, programmers have to ignore an existing type error and continue adding more ill-typed code fragments. Our results (Fig.~\ref{fig:multi-party-time}) shwo that, for 30 error locations and 200 syntax nodes, diagnosis requires 3.15 seconds; with 1000 nodes, it takes over two minutes. Recall that for a multi-party type error with $n$ parties, then there are $n (n - 1) / 2$ unique MUSes. The growth pattern in computation time roughly reflect this correlation.
 
 \begin{lstlisting}[language=Haskell, caption=Multi-party Haskell Example, label={lst:eval-multi-party}]
 data X = X
 data Y = Y
 data Z = Z
-f a = case a of 
+f a = case a of
   X -> 1
   Y -> 2
   Z -> 3
@@ -758,7 +705,8 @@ f a = case a of
     \label{fig:multi-party-time}
 \end{figure}
 
-Multi-party errors present the most significant computational challenge among the categories, followed by multi-witness and multi-step errors (Fig.~\ref{fig:compare-time}).
+\paragraph{Performance Summary}
+The size of program impact the performance of Goanna, so does the category of errors and how complex they are. In short, multi-party errors present the most significant computational challenge among the categories, followed by multi-witness and multi-step errors (Fig.~\ref{fig:compare-time}). This performance constraint roughly corresponds with the number of MUSes present in the type error. 
 
 \begin{figure}[ht]
     \centering
@@ -766,15 +714,6 @@ Multi-party errors present the most significant computational challenge among th
     \caption{Comparison of Performance Across Error Types}
     \label{fig:compare-time}
 \end{figure}
-
-    % \subsection{Threats to Validity}
-
-    % \paragraph{\textbf{Selection of the dataset}}
-    % Our selection of dataset is limited in its number. This is due to the challenge of finding programs that contain type errors. Unlike runtime errors, which can be mined from code repositories and version control histories, type errors in Haskell can be detected by the compiler tool, and ill-typed programs are usually fixed before the changes are committed to the version control systems. Further, we employed two selection methods. First, the error is indeed a type error. We test this by running the original program in GHC and checking if it indeed triggers a type error. The program is discarded otherwise, for instance, if it contains only parsing errors or runtime errors. Second, we discarded type questions where the main error relies on third-party libraries. 
-    
-  
-        
-    % \paragraph{\textbf{Measurement of performance}} Performance on Goanna and GHC was measured on a Linux virtual machine with a 3.1 GHz Processor and 2GB RAM. In practice, complex systems like this may perform differently depending on hardware and software configurations. Although we were not able to extract the performance profile of each tool across different platforms and operating systems, we chose hardware with abundant resources and up-to-date software dependencies. During our performance measuring, neither CPU usage nor memory usage was fully stressed. Additionally, GHC was run with the ``-fno-code'' flag enabled to limit its usage to type-check only.
 
 
 \section{Discussion} \label{sec:discussion}
@@ -893,8 +832,17 @@ In this paper, we introduced Goanna, a tool for identifying and resolving type e
 
 We evaluated the effectiveness of Goanna from a set of 153 Haskell programs from online sources and research papers and demonstrated its ability to identify and resolve type errors accurately and reliably compared to other tools. We also benchmarked Goanna's performance in a variaties of error scenarios. Goanna currently works with Haskell, but in the future, we plan to extend its MCS-based error diagnosis to work with other strongly typed languages.
 
+
 \bibliography{paperpile}
 
 \end{document}
 
 
+    % \subsection{Threats to Validity}
+
+    % \paragraph{\textbf{Selection of the dataset}}
+    % Our selection of dataset is limited in its number. This is due to the challenge of finding programs that contain type errors. Unlike runtime errors, which can be mined from code repositories and version control histories, type errors in Haskell can be detected by the compiler tool, and ill-typed programs are usually fixed before the changes are committed to the version control systems. Further, we employed two selection methods. First, the error is indeed a type error. We test this by running the original program in GHC and checking if it indeed triggers a type error. The program is discarded otherwise, for instance, if it contains only parsing errors or runtime errors. Second, we discarded type questions where the main error relies on third-party libraries. 
+    
+  
+        
+    % \paragraph{\textbf{Measurement of performance}} Performance on Goanna and GHC was measured on a Linux virtual machine with a 3.1 GHz Processor and 2GB RAM. In practice, complex systems like this may perform differently depending on hardware and software configurations. Although we were not able to extract the performance profile of each tool across different platforms and operating systems, we chose hardware with abundant resources and up-to-date software dependencies. During our performance measuring, neither CPU usage nor memory usage was fully stressed. Additionally, GHC was run with the ``-fno-code'' flag enabled to limit its usage to type-check only.
