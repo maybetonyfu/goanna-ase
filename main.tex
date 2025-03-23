@@ -31,9 +31,9 @@
  
 %%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
 %%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
-\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style 
+\documentclass[pdflatex,sn-nature,Numbered]{sn-jnl}% Math and Physical Sciences Numbered Reference Style 
 %%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
-%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Referenurce Style
 %%\documentclass[pdflatex,sn-vancouver,Numbered]{sn-jnl}% Vancouver Reference Style
 %%\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style 
 %%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
@@ -81,7 +81,7 @@
 
 \begin{document}
 
-\title[Article Title]{Goanna: The Most Reasonable Type Error Debugging}
+\title[Article Title]{Goanna: The Most Reasonable Type Error Debugging System}
 
 %%=============================================================%%
 %% GivenName	-> \fnm{Joergen W.}
@@ -139,7 +139,7 @@ To tackle the challenges of diagnosing and resolving type errors in statically t
 
 To further augment Goanna's capacity for type-error resolution, we introduce optimization strategies (Section~\ref{sub:optimization}) that filter out unhelpful suggestions, along with ranking heuristics (Section~\ref{sub:ranking}) that prioritize the most probable causes. Additionally, we present Goanna-IDE, an interactive programming environment for Haskell that facilitates visualization and easy navigation of Goanna's type error diagnostics.
 
-We conducted a corpus studies on two datasets to assess Goanna's accuracy (Section \ref{sub:eval-accuracy}) and reliability (Section \ref{sub:eval-conciseness}); while our benchmarking study evaluates Goanna's performance (Section \ref{sub:eval-performance}). Results demonstrate that Goanna consistently provides accurate and reiliable error diagnostics when compare to conventional tools. Goanna shows performance constraint when diagnosing large programs containing complex type errors. However, Goanna is able to provide realtime debugging assistance when working with small to medium programs.
+We conducted a corpus studies on two datasets to assess Goanna's accuracy and reliability (Section \ref{sub:eval-accuracy}); while our benchmark study evaluates Goanna's performance (Section \ref{sub:eval-performance}). Results demonstrate that Goanna consistently provides accurate and reiliable error diagnostics when compare to conventional tools. Goanna shows performance constraint when diagnosing large programs containing complex type errors. However, Goanna is able to provide realtime debugging assistance when working with small to medium programs.
 
 The main contributions of this research are:
 \begin{itemize}
@@ -149,7 +149,7 @@ The main contributions of this research are:
     \item A rigorous evaluation of Goanna's accuracy, reliability, and performance.
 \end{itemize}
 
-The techniques employed in Goanna, such as MCS enumeration and the ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is deliberately designed for adaptability across languages with similar type systems.
+The techniques employed in Goanna, such as MUS enumeration and the ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is deliberately designed for adaptability across languages with similar type systems.
 
 \section{Goanna-IDE Walkthrough} \label{walkthrough}
 In this section we  demonstrate Goanna's features using some real world examples. To showcase the debugging features,  we developed Goanna-IDE, a type error debugging interface for Haskell. Goanna-IDE is designed around the pitfalls of common typecheckers and the different categories of type errors. It make extensive use of Goanna's type error diagnosis through visualization and interactivity. Goanna-IDE provides comprehensive diagnostic error messages for type errors in Haskell and allows programmers to interactively explore their options. An online demo of Goanna-IDE is available for evaluation at \cite{Fu2023-bo}. Goanna-IDE includes a file explorer, a text editor, and a debugging panel. Goanna-IDE provides the following features when type errors are encountered:
@@ -245,13 +245,12 @@ In this section we  demonstrate Goanna's features using some real world examples
 
 
     \section{Goanna Implementation} \label{sec:implementation}
-    Goanna comprises 3 phases: constraint generation, MCS enumeration, and post-analysis. In the constraint generation phase, Goanna walks the abstract syntax tree and collects constraints. In the MCS enumeration phase, Goanna enumerates through all MCSes. Lastly, in the post-analysis phase, Goanna applies multiple optimization techniques to reduce the number of MCSes, group MCSes by common properties, and sort them based on heuristics.
+    Goanna comprises 3 phases: constraint generation, MCS enumeration, and post-analysis. In the constraint generation phase, Goanna walks the abstract syntax tree and collects constraints. In the MCS enumeration phase, Goanna enumerates through all MUSes. Lastly, in the post-analysis phase, Goanna applies multiple optimization techniques to reduce the number of MCSes, group MCSes by common properties, and sort them based on heuristics.
 
-    Goanna supports a wide and growing range of the Haskell 2010 language syntax \cite{Simon_Marlow2010-lg}. At the time of writing, fully supported features include module import/export, qualified imports, import hiding, do notation, algebraic data types, newtypes, type synonyms, type classes, operator sectioning, and range expression. Only operating in the type level, Goanna automatically support the language extensions that are not type related (RecordWildcard), and those do not extend the rules of the underlying type system (InstanceSigs). Overall Goanna support the most highly used type level extensions in Haskell and the range of supported feature is continue growing.  A detailed and updated feature coverage list can be found in \cite{Fu2023-rp}.
+    Goanna supports a wide and growing range of the Haskell 2010 language syntax \cite{Simon_Marlow2010-lg}. At the time of writing, fully supported features include module import/export, qualified imports, import hiding, do notation, algebraic data types, newtypes, type synonyms, type classes, operator sectioning, and range expression. Only operating in the type level, Goanna automatically support the language extensions that are not type related (RecordWildcard), and those do not extend the rules of the underlying type system (InstanceSigs). Overall Goanna support the most widely used type level extensions in Haskell and the range of supported feature is continue growing.  A detailed and updated feature coverage list can be found in \cite{Fu2023-rp}.
 
     \subsection{Constraint Generation} \label{sub:translation}
-    Goanna uses the abstract syntax tree of the original Haskell program and translates it into a constraint program by modeling how types are defined and used. Goanna does not restrict which constraint language and solver should be used. The only requirement is that Goanna needs to be able to assert whether a subset of the constraints is still feasible by calling a provided \texttt{solve} function during the MCS enumeration phase. In our implementation, we generate portable Prolog predicates \cite{Wielemaker2011-sr}. The \texttt{solve} function executes a predefined predicate \texttt{type\_check/0} that tests all the generated predicates. We used standard Prolog notation \texttt{name/arity} here when referring to Prolog predicates, as a Prolog predicate is identified by the combination of both attributes. 
-
+    Goanna uses the abstract syntax tree of the original Haskell program and translates it into a constraint program by modeling how types are defined and used. Goanna uses  portable Prolog predicates \cite{Wielemaker2011-sr} as its underlying constraint language and solver. Prolog is chosen for it is a widely used logic programming language, this helps generalize Goanna's approach to different programming languages in the future. To illustrate our constraint generation rule, we use standard Prolog notation \texttt{name/arity} (for example {\it unify/2}) here when referring to Prolog predicates, as a Prolog predicate is identified by the combination of both attributes. 
     
     For a simplified Haskell syntax shown in Fig.~\ref{fig:translation}.A, we generate a list of Prolog predicates in the language shown in Fig.~\ref{fig:translation}.B. We use 3 auxiliary functions during the constraint translation process (Fig.~\ref{fig:translation}.C) to generate Prolog variables for future unification. \texttt{fresh} makes a unique unbound Prolog variable. \texttt{var} takes a Haskell identifier name and returns a Prolog variable. Naively, this can be done by turning it to uppercase. \texttt{atom} takes a Haskell type constant/constructor name and returns a Prolog atom. Naively, this can be achieved by turning it into lowercase. We keep track of local variable names in a list $\Gamma$ containing Haskell variable names. A global variable $\mathcal{P}$ is defined to store the list of predicates being generated. To clarify, all \textcolor{blue}{parsed Haskell syntax} are in blue. All \textcolor{red}{generated Prolog syntax} are in red. 
     
@@ -284,8 +283,8 @@ In this section we  demonstrate Goanna's features using some real world examples
     – A minimal unsatisfiable subset (MUS) $M$ of a constraint system $C$ is a subset $M \subseteq C$ such that $M$ is unsatisfiable and $ \forall{c} \in M : M \setminus \{c\}$ is satisfiable. An MUS can be seen as a minimal explanation of the constraint system’s infeasibility. MUSes have been used extensively, mostly in combination with programming slicing, as a means to explain type errors. A MUS of type system constraints reasoning chain connecting all evidence from one location of the conflict to another. Goanna uses the set of all MUSes to group related type errors.
 
     – A minimal correction set (MCS) $M$ of a constraint system $C$ is a subset $M \subseteq C$ such that $C \setminus M$ is satisfiable and $\forall{S} \subset M : C \setminus S$ is unsatisfiable. MCSes are so named due to the fact that their removal from $C$ can be seen to “correct” the infeasibility. In an ill-typed program, an MCS $C$ can be seen as the ``cause" of a type error; the removal of C will result in the system being well-typed. Goanna uses MCS to represent potential causes of a type error. Each MCS contains the set of locations that need to be changed to fully resolve the type error.
-    
-  – A maximal satisfiable subset (MSS) $M$ of a constraint system $C$ is a subset $M \subseteq C$ such that M is satisfiable and $\forall{c}\ in\ C \setminus M:M\cup\{c\}$ is unsatisfiable. The definition of an MSS is symmetric to that of a MUS, with “satisfiable” and “unsatisfiable” swapped along with maximal for minimal. MCS and MSS are the complement sets of one another. In an ill-typed program, an MSS $M$ can be seen as the resulting typing environment if a type error is fixed by excluding the MCS $C - M$. Goanna uses an MSS to provide type hints for the program even when it is ill-typed.
+
+    – A maximal satisfiable subset (MSS) $M$ of a constraint system $C$ is a subset $M \subseteq C$ such that M is satisfiable and $\forall{c}\ in\ C \setminus M:M\cup\{c\}$ is unsatisfiable. The definition of an MSS is symmetric to that of a MUS, with “satisfiable” and “unsatisfiable” swapped along with maximal for minimal. MCS and MSS are the complement sets of one another. In an ill-typed program, an MSS $M$ can be seen as the resulting typing environment if a type error is fixed by excluding the MCS $C - M$. Goanna uses an MSS to provide type hints for the program even when it is ill-typed.
  
      \begin{figure}[ht!]
         \centering
@@ -351,17 +350,21 @@ Multi-witness type errors are also common in practice. They often occur when cha
 
 Multi-party type errors are not common in real life programs. They can happen when programmers mix the order of multiple arguments in function application.  
   
+To We provide some strategies to improve type error diagnositics for each category:
 
-These categories of type errors illustrate the main challenges in explaining type errors effectively:
 \begin{enumerate}
   \item {
-    \textbf{Multi-step Type Errors:} It is beneficial to clarify the interdependent relationships between each pair of constraints sharing the same logical variable.
+    \textbf{Simple Type Errors:}  Provide clear indication of the pair of locations associated with the error, and explain what is the logical relationship connects this pair.
+  }
+  
+  \item {
+    \textbf{Multi-step Type Errors:} To support easier trace the propogation of type error through the steps. Provide clear indication of the pair of locations associated with each step, and explain what is the logical relationship connects this them.
   }
   \item {
-    \textbf{Multi-witness Type Errors:} Identifying the number of witnesses and their associated source code locations on each side of the conflict can be insightful.
+    \textbf{Multi-witness Type Errors:} Identify the witnesses and their associated locations on each side of the conflict. Allow programmers to quickly understand the descrepency in the number of witnesses between two sides.
   }
   \item {
-    \textbf{Multi-party Type Errors:} Breaking down these errors into simpler forms can aid in understanding and resolving them.
+    \textbf{Multi-party Type Errors:} Breaking down these errors into simpler forms to support easier understanding and resolving. Allow programmer to flexibly choose which subpart to focus on.
   }
 \end{enumerate}
 
@@ -760,7 +763,7 @@ To eliminate the first limitation, one potential solution is to segment the numb
 To address the second limitation, a feasible approach is to explore different MUS enumeration algorithms. The parallel capabilities of advanced MUS enumeration methods \cite{Zhao2016-bu, Bendik2020-pz} have not been fully explored in this study. In addition, partial MUS enumeration \cite{Previti2013-mr, Liffiton2016-xi} can be employed, to provide early results to the programmer instead of waiting for the complete list of possible causes.
 
 
-\subsection{Comparison with Large Language Models}
+\subsection{Comparison with Large Language Models} \label{sec:llm}
     
 LLMs were actively experimented with performing programming related tasks such as wirting code, finding logical errors and generating documentations.  This development is tangential to Goanna's objectives of explaining type errors and supporting easier resolution of type errors. 
 
@@ -818,16 +821,16 @@ Type error slicing \cite{Haack2004-fr} is a technique to identify all necessary 
 
 \subsection{Planned User Studies and Research Questions}
 
-Evaluating Goanna with human participants is crucial for obtaining qualitative insights into its effectiveness. In preliminary workshop studies, participants exhibited positive reactions after using Goanna. However, a rigorous human study based on realistic debugging use cases is planned for the near future. We aim to investigate the following questions:
+Our evaluation for Goanna so fare relies on existing datasets and program generation. Evaluating Goanna with human participants is crucial for obtaining qualitative insights into its usefulness in providing explanation and supporting sense making in complex type errors. We have coducted a few preliminary workshop studies, participants exhibited positive reactions when using Goanna. However, a rigorous human study based on realistic debugging use cases is planned for the near future. We aim to investigate the following questions:
 
 \itemize{
-  \item Can Goanna's accuracy contribute to improved understanding and performance in real-world programming tasks?
+  \item Can Goanna's accuracy in type error identification contribute to improved understanding and performance in real-world programming tasks?
   \item Which user interface paradigms effectively leverage Goanna's strengths (such as accessing all possible error causes) and mitigate its limitations (such as slow response times with large programs)?
 }
 
 \subsection{Suggesting Syntax Approaches}
 
-An exciting avenue for enhancement is the generation of syntax change suggestions in addition to type change suggestions. As noted in \cite{Chen2014-dz}, syntax changes pose significant challenges. However, with recent advancements in generative models and research progress in ML-based type error resolution \cite{Seidel2017-uf}, the development of accurate syntax change suggestions is becoming increasingly feasible.
+Goanna's suggestion is limited by the fact that it only provide type level suggestions. For example, it may suggest {\it change this string literal ``3'' to an expression of type Int}, but not {\it change this string literal ``3'' to 3}.  An exciting avenue for enhancement its ability to suggest syntax changes that potentially solve the type error. As noted in \cite{Chen2014-dz}, syntax changes pose significant challenges. However, with recent advancements in generative models and research progress in ML-based type error resolution \cite{Seidel2017-uf}, the development of accurate syntax change suggestions is becoming increasingly feasible, as we discussed in Section \ref{sec:llm}.
 
 \subsection{Supporting Additional Languages}
 
@@ -837,9 +840,9 @@ Expanding Goanna's capabilities to encompass other functional programming langua
 
 \section{Summary} \label{sec:conclusion}
 
-In this paper, we introduced Goanna, a tool for identifying and resolving type errors in Haskell code. We described the features of Goanna, including its fix suggestions, type error grouping, and identifying multiple type errors. We also discussed our approaches to reduce and reprioritize fix suggestions while maintaining comprehensiveness. Additionally, we walked through the uses of Goanna-IDE, a type error debugging interface for Haskell.
+In this paper, we introduced Goanna, a tool for identifying and resolving type errors in Haskell code, and Goanna-IDE, a interactive programming environment for Haskell. We demonstrated the features of Goanna through examples, including its fix suggestions, type error grouping, and identifying multiple type errors. We also discussed our approaches to reduce and reprioritize potential causes.
 
-We evaluated the effectiveness of Goanna from a set of 153 Haskell programs from online sources and research papers and demonstrated its ability to identify and resolve type errors accurately and reliably compared to other tools. We also benchmarked Goanna's performance in a variaties of error scenarios. Goanna currently works with Haskell, but in the future, we plan to extend its MCS-based error diagnosis to work with other strongly typed languages.
+We evaluated the effectiveness of Goanna from a set of 153 Haskell programs from online sources and research papers and demonstrated its ability to identify the root causes type errors accurately and reliably compared to other tools. We also evaluated Goanna's performance in controled benchmarks. We show that Goanna perform well against small to median sized program. Goanna currently works with Haskell, but in the future, we plan to extend its MCS-based error diagnosis to work with other strongly typed languages.
 
 
 \bibliography{paperpile}
@@ -858,51 +861,3 @@ We evaluated the effectiveness of Goanna from a set of 153 Haskell programs from
 
 
 
-% \section*{Categorises of type errors} \label{sec:categories-1}
-
-% To address the challenges of explaining type errors to programmers and helping them resolve these errors, we have identified some common patterns of type errors can be formed from the simplest form. And more complex type errors we see on daily basis are formed from these simple forms.
-
-% A \textbf{simple type error} simplest type error are the ones involve two fragments of the program that can not agree on a type assignments. Example like Listing \ref{lst:atomic-error} shows such an error. In the example, {\tt x} can be inferred as either {\tt Int} or {\tt Char} type based on line 1 or line 2. 
-
-% \begin{lstlisting}[language=Haskell, caption=The simplest form of type error, label={lst:atomic-error}]
-%   x :: Int
-%   x = '3'
-% \end{lstlisting}
-
-% In practice, this category of type error is very easy to resolve. The 2 offending locations are reletively close to each other, and they do not require special mental bookkeeping to trace back to the root cause. 
-
-
-% A \textbf{multi-step type error} involves a chain of reasining steps to derive the error. Fig.~\ref{fig:multi-step-example}) illustrates the chains of reasoning in the assignment of a (Line 1), the equivalence of a (Line 1 and Line 2), the assignment of b (Line 2), and the equivalence of b (Line 2 and Line 3). Each step restrict the possibility of the typing more. Adding them all together there is no possible solution to assign types to this program. Type theoretically speaking, these chains are the unification operations performed by the type checker. Removing any step from the chains will resolve the conflict.
-
-% Multi-step type errors are more common in practice. They occur natually when programs develop layers of indirections or abstractions. They can cause confusion to programmers because the error can be reported at one place but the root cause is at a distant location. 
-
-% \begin{figure}[htbp]
-%   \includegraphics[width=\linewidth]{Multi-Step}
-%   \caption{
-%     \label{fig:multi-step-example}
-%     A multi-step type error in Haskell. In the program (left panel), the string literal \texttt{"True"} is assigned to the variable \texttt{a} on line 1, followed by the assignment of \texttt{a}'s value to variable \texttt{b} on line 2. Subsequently, on line 3, the program attempts to use \texttt{b} as a boolean condition in an \texttt{if} expression. The error analysis can be visualized as a "chain" of reasoning, represented by the continuous line (right panel), tracing the propagation of the type mismatch through the sequence of assignments and usage. }
-% \end{figure}
-
-% A \textbf{multi-witness type error} is like simple type error, but instead of each type assignment is supported by one location, each type assignment can be supported by multiple locations . For instance, as shown in Fig.~\ref{fig:multi-witness-example}, multiple locations (lines 3,4,5) support that {\tt a} has the type {\tt Int -> String}. On the other hand, a single location (line 2) shows that {\tt a} has the type {\tt Int -> Char}.  Clarifying and juxtaposing this discrepancy in witnesses is key to supporting understanding this type of error.
-
-% Multi-witness type errors are also common in practice. They often occur when changes to the definition of one fragment of the program, and this fragment is referenced by multiple places. Like multi-step type errors, they too often require prorgrammers to search many locations to arrive at the correct resolution.
-
-
-% \begin{figure}[htbp]
-% \centering  \includegraphics[width=\linewidth]{Multi-Witness}
-%   \caption{
-%     \label{fig:multi-witness-example}
-%     A multi-witness type error in Haskell. In the source code (Left), a type conflict arises from the \texttt{case} expression, which could be interpreted as \texttt{Char} based on the value in line 2, or as a \texttt{String} based on the values in lines 3, 4, and 5. The type conflict is graphically illustrated (Right) with \texttt{String} values marked in pink and the \texttt{Char} value in blue. The majority of \texttt{String} value witnesses suggest the lone \texttt{Char} literal \texttt{'I'} on line 2 might be a typographical error. This discrepancy underscores the significance of witness count in identifying the likely error source.}
-% \end{figure}
-
-% A \textbf{multi-party type error} involves more than two potential type assignments, each supported by distinct location.  Fig.~\ref{fig:multi-party-example} presents a typical multi-party type error: the expression {\tt d} can not be assigned a type because 3 locations on line 1 suggest 3 potential types for \texttt{d}. In practice, addressing such errors requires breaking them down into multiple type errors of simpler forms. 
-
-% Multi-party type errors are not common in real life programs. They can happen when programmers mix the order of multiple arguments in function application.  
-
-% \begin{figure}[htbp]
-% \centering  \includegraphics[width=\linewidth]{Multi-Party}
-%   \caption{
-%     \label{fig:multi-party-example}
-%     A multi-party type error in Haskell (Left), where the list \texttt{d} could potentially be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The disagreement is visually represented (Right) by three distinct colors, each corresponding to the cause of one of the possible types. This scenario differs from previous examples as resolving the type error requires adjustments at multiple locations within the code, not just a single change.
-%        }
-% \end{figure}
