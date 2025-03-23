@@ -143,15 +143,15 @@ We conducted a corpus studies on two datasets to assess Goanna's accuracy and re
 
 The main contributions of this research are:
 \begin{itemize}
-    \item A categorization of type errors that help reasoning about the their causes and complexity.
     \item Goanna, a Haskell type checker with advanced error reporting capabilities.
-    \item Goanna-IDE, an interactive Haskell development environment that support debugging type errors using Goanna's diagnositics.
-    \item A rigorous evaluation of Goanna's accuracy, reliability, and performance.
+    \item Goanna-IDE, an interactive Haskell development environment that support debugging type errors using Goanna's diagnositics. (Section \ref{sec:walkthrough})
+    \item A categorization of type errors that help reasoning about complex type errors as compositions of 4 basic forms (Section \ref{sec:categories}).
+    \item A rigorous evaluation of Goanna's accuracy, reliability, and performance. (Section \ref{sec:evaluation})
 \end{itemize}
 
 The techniques employed in Goanna, such as MUS enumeration and the ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is deliberately designed for adaptability across languages with similar type systems.
 
-\section{Goanna-IDE Walkthrough} \label{walkthrough}
+\section{Goanna-IDE Walkthrough} \label{sec:walkthrough}
 In this section we  demonstrate Goanna's features using some real world examples. To showcase the debugging features,  we developed Goanna-IDE, a type error debugging interface for Haskell. Goanna-IDE is designed around the pitfalls of common typecheckers and the different categories of type errors. It make extensive use of Goanna's type error diagnosis through visualization and interactivity. Goanna-IDE provides comprehensive diagnostic error messages for type errors in Haskell and allows programmers to interactively explore their options. An online demo of Goanna-IDE is available for evaluation at \cite{Fu2023-bo}. Goanna-IDE includes a file explorer, a text editor, and a debugging panel. Goanna-IDE provides the following features when type errors are encountered:
 
     \begin{itemize}
@@ -296,7 +296,7 @@ In this section we  demonstrate Goanna's features using some real world examples
    For the example in Fig.~\ref{fig:enumeration-example}, Goanna's MUS enumeration system identifies 2 MUSes, 3 MCSes, and 3 MSSes. Following the 3 MCSes, Goanna reports 3 potential causes of the type error: the type annotation and function definition in \texttt{f} (from $MCS_1$), the type annotation alone in \texttt{g} (from $MCS_2$), and the function definition alone in \texttt{g} (from $MCS_3$). 
 
 
-\subsection{Categories of Type Error} \label{sec:categories-2}
+\subsection{Categories of Type Error} \label{sec:categories}
 
 Using the formalization of MUSes and MCSes, we fomulated some patterns of type error. This fomulation addresses the challenges of reasoning about type errors and supporting intuitive explanation of these errors. From these patterns emerge four categories of type errors. And more complex type errors we see in practice can all be composed from one or more basic type errors from these four categories.
 
