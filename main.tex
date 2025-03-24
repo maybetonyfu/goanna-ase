@@ -26,7 +26,7 @@
  
 %%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
 %%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
-\documentclass[pdflatex,lineno,sn-nature]{sn-jnl}% Math and Physical Sciences Numbered Reference Style 
+\documentclass[pdflatex,lineno,sn-nature,Numbered]{sn-jnl}% Math and Physical Sciences Numbered Reference Style 
 %%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
 %%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Referenurce Style
 %%\documentclass[pdflatex,sn-vancouver,Numbered]{sn-jnl}% Vancouver Reference Style
@@ -74,7 +74,7 @@
 
 \begin{document}
 
-\title[Article Title]{Goanna: The Most Reasonable Type Error Debugging System}
+\title{Goanna: The Most Reasonable Type Error Debugging System}
 
 %%=============================================================%%
 %% GivenName	-> \fnm{Joergen W.}
@@ -739,11 +739,25 @@ Unlike conventional compilers, which add constraints one at a time, Goanna appli
 
 \paragraph{Meaningful and Familiar Idioms to Better Understand Type Errors}
 
-Goanna uses MCS as the building block of a type error diagnosis. This choice allows type errors to be presented as a list of possible causes; each cause shows the smallest set of changes required to fully resolve the error. Goanna is not unique in employing this paradigm of debugging errors. This type of error diagnosis has been utilized in various user interface designs, such as autocorrect software. Additionally, Goanna allows programmers to preview each possible cause: when navigating to a cause, locations that need to be changed are highlighted, and the effect of these changes on the program semantics and types is reflected through dynamically updated type hints. This interface idiom is analogous to how to merge conflict resolution tools in modern version control systems.
+Goanna uses MCS as the building block of a type error diagnosis. This choice allows type errors to be presented as a list of possible causes; each cause shows the smallest set of changes required to fully resolve the error. Goanna is not unique in employing this paradigm of debugging errors. This type of error diagnosis has been utilized in various user interface designs, such as spell-check tools (Fig. \ref{fig:ispell}). Additionally, Goanna allows programmers to preview each possible cause: when navigating to a cause, locations that need to be changed are highlighted, and the effect of these changes on the program semantics and types is reflected through dynamically updated type hints. This interface idiom is analogous to how to merge conflict resolution tools in modern version control systems.
+
+\begin{figure}[hbt]
+  \centeringp
+  \includegraphics[width=0.8\linewidth]{images/ispell}
+  \caption{Type hints}
+  \label{fig:ispell}
+\end{figure}
 
 \paragraph{Full Type Hints on ill-typed Program}
 
-In statically typed languages, particularly those like Haskell, where expressions are implicitly typed (type annotations are optional), understanding the types of various expressions is an integral part of making sense of the program. Traditional approaches run in interactive shells or command lines, such as \texttt{:t expression} command in GHCI (the interactive shell for Haskell). Modern editors enhance this functionality by providing text overlays for instant type overview \todo{example}. However, these type hints are available only when the program is well-typed; they either become unavailable or outdated when type errors occur. This limits their usefulness, as they are much more needed when resolving type errors.
+In statically typed languages, particularly those like Haskell, where expressions are implicitly typed (type annotations are optional), understanding the types of various expressions is an integral part of making sense of the program. Traditional approaches run in interactive shells or command lines, such as \texttt{:t expression} command the interactive shell for Haskell (Fig. \ref{fig:typehints} Left). Modern editors enhance this functionality by providing text overlays for instant type overview (Fig. \ref{fig:typehints} Right). However, these type hints are available only when the program is well-typed; they either become unavailable or outdated when type errors occur. This limits their usefulness, as they are much more needed when resolving type errors.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\linewidth]{images/TypeHints.pdf}
+  \caption{Type hints}
+  \label{fig:typehints}
+\end{figure}
 
 Goanna addresses this issue by inferring types for ill-typed programs to the greatest possible extent using the Maximal Satisfiable Subset (MSS). MSSes are the complement set to MCS. Therefore, Goanna has access to an MSS for each MCS. The intuitive is that MSS represents the largest portion of the source code that is well-typed, allowing a set of type assignments for each possible cause. That is, Goanna's type hints are two-dimensional: they encompass every expression in the program and also reflect how types would change if a different cause for type error is selected. This additional information helps verify whether a Goanna's diagnosis aligns with the programmer's true intentions, providing more confidence in identifying the root cause.
 
