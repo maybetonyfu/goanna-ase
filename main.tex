@@ -688,12 +688,22 @@ f a = case a of
 \end{figure}
 
 \paragraph{Performance Summary}
-The program's size impacts Goanna's performance, and so does the category of errors and how complex they are. In short, multi-party errors present the most significant computational challenge among the categories, followed by multi-witness and multi-step errors (Fig.~\ref{fig:compare-time}). This performance constraint roughly corresponds with the number of MUSes in the type error. 
+The size of the program influences Goanna's performance, as do the category and complexity of errors. Specifically, multi-party errors pose the greatest computational challenge among the various categories, followed by multi-witness and multi-step errors (see Fig.~\ref{fig:compare-time}). This performance constraint is approximately correlated with the number of Minimal Unsatisfiable Subsets (MUSes) in the type error.
+
+It is important to note that our benchmarking aims to evaluate the performance characteristics of Goanna under stress conditions. Some of the samples we generated are unlikely to appear in typical programming scenarios. Generally, common type errors in smaller programs (fewer than 100 lines of code) can be resolved by Goanna within approximately one second, making it well-suited for providing real-time feedback to programmers. All defective programs in our datasets are diagnosed under 1 second. However, Goanna demonstrates moderate performance when diagnosing larger programs (exceeding 100 lines) or handling extreme type errors, such as multi-party errors involving numerous parties. In such cases, it is more practical for Goanna to offer asynchronous, on-demand diagnosis rather than real-time feedback.
+
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=\linewidth]{images/compare-time.png}
+%     \caption{{\bf Comparison of the Performance Across Three Categories of Type Errors.} The {\it y}-axis represents the time taken to generate type error diagnoses, while the {\it x}-axis represents the number of locations involved in the type error. This translates to different interpretations across type error categories: for multi-step type errors, it denotes the number of steps; for multi-witness type errors, it denotes the number of witnesses; and for multi-party type errors, it denotes the number of parties.}
+%     \label{fig:compare-time}
+% \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{images/compare-time.png}
-    \caption{{\bf Comparison of the Performance Across Three Categories of Type Errors.} The {\it y}-axis represents the time taken to generate type error diagnoses, while the {\it x}-axis represents the number of locations involved in the type error. This translates to different interpretations across type error categories: for multi-step type errors, it denotes the number of steps; for multi-witness type errors, it denotes the number of witnesses; and for multi-party type errors, it denotes the number of parties.}
+    \includegraphics[width=\linewidth]{images/DurationByCategory.png}
+\caption{{\bf Performance Comparison Across Three Categories of Type Errors.} The {\it x}-axis indicates the number of syntax nodes in the program, whereas the {\it y}-axis signifies the number of locations involved in the type error. In the case of multi-step type errors, the number of locations corresponds to the number of steps; for multi-witness type errors, it corresponds to the number of witnesses; and for multi-party type errors, it represents the number of parties. The color scale indicates the time required to generate type error diagnostics, which is represented on a square-root scale to more accurately reflect the computational time increase.}
     \label{fig:compare-time}
 \end{figure}
 
@@ -743,6 +753,7 @@ As we preluded in Section \ref{sec:evaluation}, Goanna's performance is constrai
 One potential solution to eliminate the first limitation is to reduce the scope constraint solving from each file into smaller units, such as top-level function definitions, and process these sequentially in topological order. Goanna chose to use a single file as the smallest type-checking unit to provide a concise and minimal formalization of the constraint-based type system.  Smaller source code units result in a smaller constraint system, which profoundly mediates the pressure of MUS enumeration. This method is widely used in mainstream compiler tools to manage type-checking in real-world programs. 
 
 To address the second limitation, a feasible approach is to explore different MUS enumeration algorithms. The parallel capabilities of advanced MUS enumeration methods \cite{Zhao2016-bu, Bendik2020-pz} have not been fully explored in this study. In addition, partial MUS enumeration \cite{Previti2013-mr, Liffiton2016-xi} can be employed to provide early results to the programmer instead of waiting for the complete list of possible causes.
+
 
 
 \subsection{Comparison with Large Language Models} \label{sec:llm}
