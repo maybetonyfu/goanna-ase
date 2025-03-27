@@ -21,7 +21,7 @@
 
 %%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
 
-%%Note: the following reference styles support Namedate and Numbered referencing. By default, the style follows the most common style. To switch between the option,s you can add or remove Numbered in the optional parenthesis. 
+%%Note: the following reference styles support Namedate and Numbered referencing. By     default, the style follows the most common style. To switch between the option,s you can add or remove Numbered in the optional parenthesis. 
 %%The option is available for: sn-basic, sn-vancouver, sn-chicago%  
  
 %%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
@@ -51,7 +51,6 @@
 \setlength{\marginparwidth}{2cm}
 \usepackage{todonotes}
 \usepackage{float}%
-
 %%%% 
 
 %%%%%=============================================================================%%%%
@@ -163,10 +162,10 @@ In this section, we demonstrate Goanna's features using some real-world examples
         \label{fig:goanna-example-1}
     \end{figure}
 
-    Note that the cause suggested by GHC is only one of the possibilities identified by Goanna. In fact, Goanna suggests that there are more likely fixes, indicated by the star symbols. The most likely fix, based on Goanna's cause heuristics (Section \ref{sub:ranking}), is the \texttt{Char} literal \texttt{'1'} on line 5, indicated by the 3 stars (Fig.~\ref{fig:goanna-example-1}).
+    Note that the cause suggested by GHC is only one of the possibilities identified by Goanna. In fact, Goanna suggests that there are more likely fixes, indicated by the star symbols. Goanna-IDE uses a star-based rating system to signal the ``likelihood'' of each cause. Three stars indicate the most likely cause, 2 stars, and 1 star follows.  The most likely fix, based on Goanna's cause heuristics (Section \ref{sub:ranking}), is the \texttt{Char} literal \texttt{'1'} on line 5, indicated by the 3 stars (Fig.~\ref{fig:goanna-example-1}).
     
     By clicking on the most likely cause, Goanna shows different highlights in the editor (e.g., see Fig.~\ref{fig:goanna-example-2}). Goanna reports the error is caused by the literal \texttt{'1'} and suggests changing it to an integer. All the type hints are adjusted based on our new assumption. Goanna ranks all possible causes using a series of heuristics. In this case, the preference is largely influenced by how many locations are required to change to fix the error. 
-    
+
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=\linewidth]{images/goanna-example-2}
@@ -174,7 +173,11 @@ In this section, we demonstrate Goanna's features using some real-world examples
         \label{fig:goanna-example-2}
     \end{figure}
 
+    In fact, {\bf the causes identified by Goanna are comprehensive}. Goanna will take into account potential causes in expressions, pattern matchings, type annotations, and type class constraints. Consequently, programmers will eventually find the real cause by exploring Goanna's diagnosis.
 
+    
+    In addition, {\bf each cause suggested by Goanna is sufficient to resolve the type error}. Traditional tools often reveal a set of partial locations of a type error, leaving programmers to realize later that additional adjustments are needed for a complete resolution. Goanna, however, offers suggestions that encompass a complete set of changes necessary for a resolution.
+    
     \subsection{Identifying all type errors} \label{sub:all-errors}
     
     A key feature of Goanna is its ability to detect all type errors in the code thanks to its MUS enumeration (Subsection \ref{sub:enumeration}). This is not always the case with other tools, such as GHC, which may only report a subset of the errors present in the code or stop at the first error they encounter. Goanna, however, always thoroughly identifies all type errors in the codebase. In the example of Fig.~\ref{fig:goanna-example-1} and Fig.~\ref{fig:goanna-example-2}, Goanna discovered the two errors included in the file. Clicking on the error selector on the bottom-left will change the content of the debugging panel and text editor highlights to reflect the cause of a different error (Fig.~\ref{fig:multi-error}). 
@@ -185,7 +188,6 @@ In this section, we demonstrate Goanna's features using some real-world examples
         \caption[Selecting a different error in Goanna]{\textbf{Selecting a different error in Goanna.} Selecting a different error using Goanna's error selector. The debugging panel will show potential cause locations for the selected error. The highlights and type hints in the editor panel will focus on the selected error.}
         \label{fig:multi-error}
     \end{figure}
-
 
 
     \subsection{Type Error Grouping}  \label{sub:group}
@@ -207,31 +209,9 @@ In this section, we demonstrate Goanna's features using some real-world examples
 
     For instance, in Fig.~\ref{fig:grouping-ghc}, the functions \texttt{variance} and \texttt{mean} expect the final type of \texttt{size} to be a fractional value. However, the definition of \texttt{size} results in an integral value, which creates a conflict. While GHC shows three separate type errors, Goanna groups these interconnected errors into a single entity, as shown in Fig.~\ref{fig:grouping-goanna}. These errors can be addressed collectively, thereby improving the efficiency of the programmer.
 
-    \subsection{Discovering Potential Causes} \label{sub:suggesting}
-    When a type error arises, Goanna-IDE shows a list of possible causes in the debugging panel. Each possible cause consists of one or more locations in the code that require modification to rectify the type error. Clicking on a possible cause activates it. The locations are highlighted in the text editor, as well as inlay type hints suggesting the suitable type expected for that code slice. In the debugging panel, the activated cause is outlined with a red icon, while others are marked with a blue icon. 
-
-    The causes identified by Goanna are comprehensive. Goanna will take into account potential causes in expressions, pattern matchings, type annotations, and type class constraints. Consequently, programmers will generally find the real cause by exploring Goanna's diagnosis. Unlike most Hindley-Milner-based~\cite{Damas1982-zw} type inference, Goanna does not show a bias towards the unification order, thereby avoiding the left-to-right bias \cite{Chen2014-ev}. 
+    % \subsection{Type Hints}\label{subset:type-hints}
+    % In addition to suggesting which part causes that type error, Goanna-IDE explains why this is inferred by using in-situ type hints on necessary terms. The type hints are displayed as inlay decorations on top of respective fragments of source code. These type hints provide enough information for programmers to understand the type inference, and Goanna will leave out the terms that are irrelevant to the type error. Goanna's type hints are also dynamic to the selected cause. Programmers can observe how the inferred type of each term changes by changing the selected cause. Many modern programming tools use inlay type hints to support understanding, such as the Haskell Language Server~\cite{HLS-Developers2023-ot}. Most often, these tools will display all type hints or none. Unlike in Goanna, these tools do not provide alternative sets of type hints for programmers to compare.
     
-    Note that Goanna's fixes are sufficient to resolve the type error. Traditional tools often reveal a set of partial locations of a type error, leaving programmers to realize later that additional adjustments are needed for a complete resolution. Goanna, however, offers fixes that encompass a complete set of changes necessary for a resolution.
-
-
-    \subsection{Assessing Likelihood of Causes} \label{sub:conciseness}
-    One challenge of Goanna's ``find all causes" approach is the number of ways an error can occur, which can sometimes become too large to be useful in practice. Goanna employs multiple techniques to intelligently sieve the list. For the remaining list, Goanna employs a few heuristics to rank their likelihood and inform programmers which causes they consider first. 
-    Goanna-IDE uses a star-based rating system to signal the ``likelihood'' of each cause. Three stars indicate the most likely cause, 2 stars, and 1 star follows. 
-
-    \subsection{Type Hints}\label{subset:type-hints}
-    In addition to suggesting which part causes that type error, Goanna-IDE explains why this is inferred by using in-situ type hints on necessary terms. The type hints are displayed as inlay decorations on top of respective fragments of source code. These type hints provide enough information for programmers to understand the type inference, and Goanna will leave out the terms that are irrelevant to the type error. Goanna's type hints are also dynamic to the selected cause. Programmers can observe how the inferred type of each term changes by changing the selected cause. Many modern programming tools use inlay type hints to support understanding, such as the Haskell Language Server~\cite{HLS-Developers2023-ot}. Most often, these tools will display all type hints or none. Unlike in Goanna, these tools do not provide alternative sets of type hints for programmers to compare.
-    
-    % \subsection{Cross-module type error debugging}\label{subsec:cross-module-type-error-debugging}
-    % When encountering a type error spanning across multiple modules, Goanna-IDE will group the potential causes indicated by their module and declaration block. Clicking on any possible cause location will focus the editor on the corresponding module (Fig.~\ref{fig:goanna-cross-module}). Goanna is the first tool to introduce cross-module type debugging. The way Goanna presents cross-module type errors is analogous to how run-time errors are presented in most programming languages. When encountering a run-time error, most programming environments show a call stack containing multiple file paths, and programmers can choose which file to start investigating. Often, programmers choose to start from the file authored by themselves instead of library files. Goanna uses this mental model to group potential locations that cause a type error by module and definition blocks. 
-    
-    % \begin{figure}[ht!]
-    %     \centering
-    %     \includegraphics[width=\linewidth]{images/goanna-cross-module}
-    %     \caption[Debugging a cross-module error in Goanna]{\textbf{Debugging a cross-module error in Goanna.} In this error, potential defects may appear in either module \texttt{A} and \texttt{B}. Goanna suggests 3 potential causes and fixes: 1) Change the type annotation of \texttt{x} to \texttt{[Maybe Int]} (Top). 2) Change the y variable on line 4 of module \texttt{A} to an instance of \texttt{Int}. 3) Change both the elements in the list literal in module \texttt{B} (Bottom), hence affecting the type of \texttt{y}. Clicking on each potential cause in the debugging panel results in different highlights and type hints in the editor panel.}
-    %     \label{fig:goanna-cross-module}
-    % \end{figure}
-
 
     \section{Goanna Implementation} \label{sec:implementation}
 Goanna consists of three phases: constraint generation, MUS enumeration, and post-analysis, each with its distinct role. In the constraint generation phase (Section \ref{sub:translation}), Goanna translates program syntax into constraints. During the MUS enumeration phase (Section \ref{sub:enumeration}), Goanna identifies all critical constraint subsets, which include Minimal Unsatisfiable Subsets, Minimal Correction Subsets, and Maximal Satisfiable Subsets. Finally, in the post-analysis phase, Goanna applies various optimization techniques, and transform the critical constraint subsets into intuitive type error diagnostics. This phase includes type error grouping (Section \ref{sub:grouping}) and case ranking (Section \ref{sub:ranking}).
@@ -239,8 +219,7 @@ Goanna consists of three phases: constraint generation, MUS enumeration, and pos
     Goanna supports a wide and growing range of the Haskell 2010 language syntax \cite{Simon_Marlow2010-lg}. When writing, fully supported features include module import/export, qualified imports, import hiding, do notation, algebraic data types, new types, type synonyms, type classes, operator sectioning, and range expression. Only operating at the type level, Goanna automatically supports the language extensions that are not type-related (RecordWildcard) and those that do not extend the rules of the underlying type system (InstanceSigs). Overall, Goanna supports the most widely used type-level extensions in Haskell, and the range of supported features continues growing.  A detailed and updated feature coverage \cite{Fu2023-rp} is publicly available.
 
     \subsection{Constraint Generation} \label{sub:translation}
-
-    Goanna uses the abstract syntax tree of the original Haskell program and translates it into a constraint program by modeling how types are defined and used. Goanna uses portable Prolog predicates \cite{Wielemaker2011-sr} as its underlying constraint language and solver. Prolog is chosen because it is a widely used logic programming language; this helps generalize Goanna's approach to different programming languages in the future. To illustrate our constraint generation rule, we use standard Prolog notation \texttt{name/arity} (for example {\it unify/2}) here when referring to Prolog predicates, as a Prolog predicate is identified by the combination of both attributes. 
+In this phase, Goanna translates Haskell source code into constraints. Specifically, Goanna use portable Prolog \cite{Wielemaker2011-sr} as its underlying constraint language and solver. Prolog is chosen because it is a widely used logic programming language; this helps generalize Goanna's approach to different programming languages in the future.  At the end of constraint generation phase, a Prolog program is produced. This Prolog program will succeed upon execution if the Haskell code is well-typed and will fail otherwise. Each line of the Prolog program is annotated with a corresponding location in the Haskell source code. During the MUS enumeration phase, these lines can be conditionally activated or deactivated to determine whether a particular location in the Haskell code contributes to a potential issue. This section outlines how we generate this Prolog program. 
 
 For a simplified Haskell syntax shown in Fig.~\ref{fig:translation}.A, we generate a list of Prolog predicates in the language shown in Fig.~\ref{fig:translation}.B. We use 4 auxiliary functions during the constraint translation process (Fig.~\ref{fig:translation}.C) to generate Prolog variables for future unification. \texttt{fresh} makes a unique unbound Prolog variable. \texttt{var} takes a Haskell identifier name and returns a Prolog variable. Naively, this can be done by turning it to uppercase. \texttt{atom} takes a Haskell type constant/constructor name and returns a Prolog atom. Naively, this can be achieved by turning it into lowercase. \texttt{append\_clause} takes a Prolog predicate \textcolor{red}{P} and stores it into the set of all generated Prolog predicates $\mathcal{P}$. To clarify, all \textcolor{blue}{parsed Haskell syntax} are in blue. All \textcolor{red}{generated Prolog syntax} are in red. 
     
@@ -256,7 +235,7 @@ For a simplified Haskell syntax shown in Fig.~\ref{fig:translation}.A, we genera
     \end{figure}
     
   
-    An example of such translation can be found in Fig.~\ref{fig:translation-example}. In the Haskell program (Fig.~\ref{fig:translation-example}.A), 2 functions are declared: \texttt{f} and \texttt{g}. This will generate two corresponding Prolog predicates \texttt{f/2} and \texttt{g/2}. In the actual implementation of Goanna, the generated predicates would be \texttt{f/6} and \texttt{g/6}. The extra arguments are added to perform various tasks involving syncing state, such as breaking recursive calls and collecting type class constraints. In a predefined predicate \texttt{type\_check/0}, the subgoals \texttt{f(\_,\_)} and \texttt{g(\_,\_)} are added. Executing the top-level goal \texttt{type\_check} in a Prolog environment will get a result of \texttt{false}.
+    An example of such translation can be found in Fig.~\ref{fig:translation-example}. We use standard Prolog notation \texttt{name/arity} (for example {\it unify/2}) here when referring to a Prolog predicate, as a Prolog predicate is identified by the combination of both attributes. In the Haskell program (Fig.~\ref{fig:translation-example}.A), 2 functions are declared: \texttt{f} and \texttt{g}. This will generate two corresponding Prolog predicates \texttt{f/2} and \texttt{g/2}. In the actual implementation of Goanna, the generated predicates would be \texttt{f/6} and \texttt{g/6}. The extra arguments are added to perform various tasks involving syncing state, such as breaking recursive calls and collecting type class constraints. In a predefined predicate \texttt{type\_check/0}, the subgoals \texttt{f(\_,\_)} and \texttt{g(\_,\_)} are added. Executing the top-level goal \texttt{type\_check} in a Prolog environment will get a result of \texttt{false}.
     
   \begin{figure}[htb]
         \centering
@@ -303,13 +282,13 @@ In practice, type errors in this category are trivial to resolve. The two offend
 \subsubsection*{Multi-step Type Error}
 
 \begin{figure}[hbt]
-  \centering \includegraphics[width=\linewidth]{images/Multi-Step-MUS}
+  \centering \includegraphics[width=0.8\linewidth]{images/Multi-Step-MUS}
   \caption {A multi-step type error influenced by potential issues in the definition of \texttt{a}, \texttt{b}, or the conditional expression involving \texttt{b}. These elements are logically connected as depicted (Top Right). The analysis of the source code yields 7 constraints (Bottom Left), from which only one Minimal Unsatisfiable Subset (MUS) is identified (Bottom Right).
   }
   \label{fig:multi-step-2}
   \end{figure}
 
-Multi-step type errors involve a sequence of logical deductions that link one conflicting location to another. When viewed as a constraint system, a multi-step type error is a type error that contains a single MUS. Relaxing any constraint within the MUS leads to a satisfiable system, implying that each location correlated to a constraint in the MUS could potentially cause the type error. For instance, in Fig.~\ref{fig:multi-step-2}, the MUS consists of the constraints $\{C1, C2, C4, C5\}$. Removing any one of the elements would allow the program to type-check successfully.
+Multi-step type errors involve a sequence of logical deductions that link one conflicting location to another. When viewed as a constraint system, a multi-step type error is a type error that contains a single MUS. Relaxing any constraint within the MUS leads to a satisfiable system, implying that each location correlated to a constraint in the MUS could potentially cause the type error. For instance, in a typical multi-step type error shown in  Fig.~\ref{fig:multi-step-2}, the MUS consists of the constraints $\{C1, C2, C4, C5\}$. Removing any one of the elements would allow the program to type-check successfully.
 
 Multi-step type errors are more common in practice. They occur naturally when programs develop layers of indirections or abstractions. They can cause confusion to programmers because the error can be reported in one place, but the root cause is at a distant location and requires tracing back and forth and mental bookkeeping. 
 
@@ -318,13 +297,13 @@ Multi-step type errors are more common in practice. They occur naturally when pr
 
 \begin{figure}[hbt]
     \centering
-\includegraphics[width=\linewidth]{images/Multi-Witness-MUS}
+\includegraphics[width=0.8\linewidth]{images/Multi-Witness-MUS}
   \caption{\label{fig:multi-witness-2}
     Analysis of a multi-witness type error, where the \texttt{case} expression could be interpreted as type \texttt{Char} or \texttt{String}. This scenario showcases a type error with three witnesses against one witness (Top Right). From the source code, 9 constraints are established (Bottom Left), resulting in 3 identified MUSes. Interestingly, all MUSes include constraint C3, suggesting its pivotal role in favoring the possibility that the \texttt{Char} type is erroneous.
   }
   \end{figure}
 
-A multi-witness type error occurs when multiple locations (witnesses) on one side of a conflict suggest the same type assignment. When viewed as a constraint system, a multi-witness type error contains multiple MUSes. The precise number of MUSes depends on the number of witnesses at each endpoint. If a type error involves $m$ witnesses on one side and $n$ on the other, there will be a total of $m \times n$ MUSes. For example, in Fig.~\ref{fig:multi-witness-2}, there are three MUSes: $\{C3, C5\}, \{C3, C7\}, \{C3, C9\}$. It is crucial to note that constraint $C3$ appears in every MUS, signaling a likely root cause.
+A multi-witness type error occurs when multiple locations (witnesses) on one side of a conflict suggest the same type assignment. When viewed as a constraint system, a multi-witness type error contains multiple MUSes. The precise number of MUSes depends on the number of witnesses at each endpoint. If a type error involves $m$ witnesses on one side and $n$ on the other, there will be a total of $m \times n$ MUSes. For example, for a multi-witness type error shown in Fig.~\ref{fig:multi-witness-2}, there are three MUSes: $\{C3, C5\}, \{C3, C7\}, \{C3, C9\}$. It is crucial to note that constraint $C3$ appears in every MUS, signaling a likely root cause.
 
 Multi-witness type errors are also common in practice. They often occur when changes to the definition of one fragment of the program, and this fragment is referenced by multiple places. Like multi-step type errors, they too often require programmers to search many locations to arrive at the correct resolution.
 
@@ -332,11 +311,11 @@ Multi-witness type errors are also common in practice. They often occur when cha
 
 \begin{figure}[hbt]
   \centering
-  \includegraphics[width=\linewidth]{images/Multi-Party-MUS}
+  \includegraphics[width=0.8\linewidth]{images/Multi-Party-MUS}
   \caption{\label{fig:multi-party-2} Analysis of a multi-party type error regarding the list \texttt{d}, which could alternately be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The conflict is depicted as a disagreement among three parties (Top Right). An analysis based on the source code generates 5 constraints (Bottom Left), leading to 3 distinct Minimal Unsatisfiable Subsets (MUSes). Notably, this scenario differs from the multiple witness type error as no single constraint appears across all MUSes.}
   \end{figure}
 
-  A multi-party type error features several irreconcilable type assignments stemming from different locations within the source code. Like multi-witness errors, multi-party errors contain multiple MUSes. In the example shown in Fig.~\ref{fig:multi-party-2}, there are three MUSes: $\{C3, C4\}, \{C3, C5\}, \{C4, C5\}$. Unlike the multi-witness scenario, no single element appears across all MUSes, suggesting a more complex type error scenario. Generally, if a multi-party type error contains $n$ parties, then there are $n (n - 1) / 2$ unique MUSes.
+  A multi-party type error features several irreconcilable type assignments stemming from different locations within the source code. Like multi-witness errors, multi-party errors contain multiple MUSes. In the multi-party type error shown in Fig.~\ref{fig:multi-party-2}, there are three MUSes: $\{C3, C4\}, \{C3, C5\}, \{C4, C5\}$. Unlike the multi-witness scenario, no single element appears across all MUSes, suggesting a more complex type error scenario. Generally, if a multi-party type error contains $n$ parties, then there are $n (n - 1) / 2$ unique MUSes.
 
 Multi-party type errors are not common in real-life programs. They can happen when programmers mix the order of multiple arguments in a function application.  
   
@@ -551,9 +530,9 @@ f a = case a of
 \end{figure}
 
 \paragraph{Performance Summary}
-The size of the program influences Goanna's performance, as do the category and complexity of errors. Specifically, multi-party errors pose the greatest computational challenge among the various categories, followed by multi-witness and multi-step errors (see Fig.~\ref{fig:compare-time}). This performance constraint is approximately correlated with the number of Minimal Unsatisfiable Subsets (MUSes) in the type error.
+The size of the program influences Goanna's performance, as do the category and complexity of errors. Specifically, multi-party errors pose the greatest computational challenge among the various categories, followed by multi-witness and multi-step errors (see Fig.~\ref{fig:compare-time}). We showed that this performance constraint is approximately correlated with the number of Minimal Unsatisfiable Subsets (MUSes) in the type error. Follow this insight, we discuss several avenues to improve the performance of Goanna and systems using similar techniques in Section \ref{sec:optimizing-performance}.
 
-It is important to note that our benchmarking aims to evaluate the performance characteristics of Goanna under stress conditions. Some of the samples we generated are unlikely to appear in typical programming scenarios. Generally, common type errors in smaller programs (fewer than 100 lines of code) can be resolved by Goanna within approximately one second, making it well-suited for providing real-time feedback to programmers. All defective programs in our datasets are diagnosed in under 1 second. However, Goanna demonstrates moderate performance when diagnosing larger programs (exceeding 100 lines) or handling extreme type errors, such as multi-party errors involving numerous parties. In such cases, it is more practical for Goanna to offer asynchronous, on-demand diagnosis rather than real-time feedback.
+It is important to note that our benchmarking aims to evaluate the performance characteristics of Goanna under stress conditions. Some of the samples we generated are unlikely to appear in typical programming scenarios. Generally, common type errors in smaller programs (fewer than 100 lines of code) can be resolved by Goanna within approximately one second, making it well-suited for providing real-time feedback to programmers. All defective programs in our datasets are diagnosed in under 1 second. However, Goanna demonstrates moderate performance when diagnosing larger programs (exceeding 100 lines) or handling extreme type errors, such as multi-party errors involving numerous parties. In such cases, it is more practical for Goanna to offer asynchronous, on-demand diagnosis rather than real-time feedback. 
 
 
 % \begin{figure}[ht]
@@ -573,7 +552,7 @@ It is important to note that our benchmarking aims to evaluate the performance c
 
 \section{Discussion} \label{sec:discussion}
 
-This section begins with examining Goanna's accuracy and reliability, along with its practical advantages over traditional tools. We then analyze the trade-offs made in Goanna's performance and explore potential improvements. Finally, we compare the strengths and weaknesses of Goanna with Large Language Model (LLM)-based programming assistance and explore how these two approaches can be integrated for optimal benefits.
+This section comprises three parts. We begins with examining Goanna's accuracy and reliability, along with its practical advantages over traditional tools. We then analyze the trade-offs made in Goanna's performance and explore avenues to improve on this limitation. Finally, we compare the strengths and weaknesses of Goanna with Large Language Model (LLM)-based programming assistance and explore how these two approaches can be integrated for optimal benefits.
 
 \subsection{Strengths of Goanna and MCS-based Error Diagnostics}
 
@@ -591,7 +570,7 @@ Goanna uses MCS as the building block of a type error diagnosis. This choice all
 
 \begin{figure}[hbt]
   \centering
-  \includegraphics[width=0.8\linewidth]{images/ispell}
+  \includegraphics[width=0.95\linewidth]{images/ispell}
   \caption{{\bf A text editor (Emacs) displays a spelling error with multiple correction suggestions.} The word {\it "Haskll"} is misspelled, and several candidates are shown at the top of the screen. The first suggestion is the correct spelling correction.}
   \label{fig:ispell}
 \end{figure}
@@ -602,14 +581,14 @@ In statically typed languages, particularly those like Haskell, where expression
 
 \begin{figure}[hbt]
   \centering
-  \includegraphics[width=0.9\linewidth]{images/TypeHints.pdf}
+  \includegraphics[width=\linewidth]{images/TypeHints.pdf}
   \caption{\textbf{Different Approaches to Querying Types in Haskell.} In the Glasgow Haskell Compiler Interactive (GHCI), users employ the command \texttt{:t expression} to query type information. Modern integrated development environments (IDEs), such as Visual Studio Code, intrinsically display this type information inline within the code, thereby eliminating the need for programmers to make manual type queries.}
   \label{fig:typehints}
 \end{figure}
 
 Goanna addresses this issue by inferring types for ill-typed programs to the greatest possible extent using the Maximal Satisfiable Subset (MSS). MSSes are the complement set to MCS. Therefore, Goanna has access to an MSS for each MCS. The intuition is that MSS represents the largest portion of the source code that is well-typed, allowing a set of type assignments for each possible cause. That is, Goanna's type hints are two-dimensional: they encompass every expression in the program and also reflect how types would change if a different cause for type error is selected. This additional information helps verify whether a Goanna's diagnosis aligns with the programmer's true intentions, providing more confidence in identifying the root cause.
 
-\subsection{Optimizing Performance}
+\subsection{Optimizing Performance} \label{sec:optimizing-performance}
 
 As we preluded in Section \ref{sec:evaluation}, Goanna's performance is constrained by the computational cost of the MUS enumeration. More specifically, the performance is limited by the efficiency in discovering a single MUS through the shrink algorithm and the total number of MUSes present in the program. 
 
