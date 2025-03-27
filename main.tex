@@ -74,7 +74,7 @@
 
 \begin{document}
 
-\title{Goanna: A Reasonable Approach to Debugging Type Error}
+\title{Goanna: A Reasonable Approach for Type Error Debugging}
 
 %%=============================================================%%
 %% GivenName	-> \fnm{Joergen W.}
@@ -99,7 +99,7 @@
 \affil{ \orgname{Monash University}}
 
 \abstract{
-Statically typed languages offer significant advantages, such as bug prevention, enhanced code quality, and reduced maintenance costs. However, these benefits often come at the expense of a steep learning curve and a slower development pace. Haskell, known for its expressive and strict type system, poses challenges for inexperienced programmers in learning and using its type system, especially in debugging type errors. We introduce Goanna, a novel tool that serves as a type checker and an interactive type error debugging tool for Haskell. When encountering type errors, Goanna identifies a comprehensive list of potential causes and resolutions based on the minimum correction subsets (MCS) enumeration. We evaluated Goanna's effectiveness using 86 diverse Haskell programs from online discourse, demonstrating its ability to accurately identify and resolve type errors. Additionally, we present a collection of techniques and heuristics to enhance Goanna's suggestion-based error diagnosis and show their effectiveness from our evaluation.  
+Statically typed languages offer many advantages in software engineering, including bug prevention, enhanced code quality, and reduced maintenance costs. However, these benefits come at the expense of a steep learning curve and a slower development pace. While known for its expressive and strong type system, Haskell often frustrates programmers when learning and using its powerful type system, especially when debugging type errors. We introduce Goanna, a novel tool that performs type-checking for Haskell and focuses on improving error diagnostics. When encountering type errors, Goanna identifies a comprehensive list of possible causes and provides a potential course of action for each cause. To achieve this, Goanna uses constraint logic programming and Minimal Correction Subsets (MCS) to support its diagnostics. We evaluated Goanna's effectiveness using 153 diverse Haskell programs from online discourse and research literature, demonstrating its ability to accurately and reliably identify root causes compared to traditional tools. Our benchmark study shows that Goanna performed modestly when diagnosing large programs containing complex errors but was responsive in providing real-time debugging assistance when working with small to medium-sized programs.
 }
 
 \keywords{Type Errors, Constraint Logic Programming, Functional Languages, Integrated Development Environment}
