@@ -288,7 +288,7 @@ For a simplified Haskell syntax shown in Fig.~\ref{fig:translation}.A, we genera
 
 \subsection{Categories of Type Error} \label{sec:categories}
 
-Using the knowledge of Minimal Unsatisfiable Subsets (MUSes), Minimal Correction Subsets (MCSes), and Maximal Satisfiable Subsets (MSSes), we have developed a method to categorize type errors. This formalization addresses the challenges associated with reasoning about type errors and providing intuitive explanations for them. Using this method, we have identified four primary categories of type errors. More complex type errors observed in practice can be decomposed into one or more basic type errors from these four categories.
+By utilizing the principles of Minimal Unsatisfiable Subsets (MUSes), Minimal Correction Subsets (MCSes), and Maximal Satisfiable Subsets (MSSes), we have identified four primary categories of type errors. More complex type errors encountered in practice can be decomposed into one or more of these basic categories. This formalization helps reasoning about type errors and provides intuitive explanations for them. We use this categorization as a guiding principle for post-analysis steps and error diagnosis design. Furthermore, this categorization offers insights into the computational complexity of our method, as demonstrated in our evaluation (Section \ref{sec:evaluation}).
 
 \subsubsection*{Simple Type Error}
 A \textbf{simple type error} always involves two locations in the program that can not agree on a type assignment. An example like Listing \ref{lst:atomic-error} shows such an error. In the example, {\tt x} can be inferred as either {\tt Int} or {\tt Char} type based on line 1 or line 2. 
