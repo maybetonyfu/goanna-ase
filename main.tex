@@ -51,7 +51,8 @@
 \setlength{\marginparwidth}{2cm}
 \usepackage{todonotes}
 \usepackage{float}%
-%%%%
+
+%%%% 
 
 %%%%%=============================================================================%%%%
 %%%%  Remarks: This template is provided to aid authors with the preparation
@@ -112,7 +113,7 @@ Statically typed languages offer numerous benefits in software engineering, incl
 
 Statically typed languages manifest in multiple paradigms. Functional programming languages, such as ML and Haskell, have embraced static typing since their conception. Compared to languages from other paradigms, such as Java and C, statically typed functional languages offer two distinct advantages. First, they feature more flexible and expressive type systems that allow domain problems to be succinctly modeled at the type level with strong guarantees of correct behavior. Second, the support for polymorphic types and global type inference enable rigorous type checking even without explicitly writing type annotations. This paper uses Haskell as a case study to explore the challenges and solutions associated with advanced type systems.
 
-Haskell is renowned for its expressive and robust type system, which allows programmers to develop programs in a type-driven manner. Innovations in type systems frequently pioneered from Haskell, such as algebraic data types, type inference, and type classes, have been incorporated into mainstream programming languages \cite{Hudak2007-kn, TypeScriptTeam_undated-qk, Klabnik_undated-mp, Griesemer_undated-ff}. Despite the advanced type system, Haskell is equally known for its steep learning curve, unforgiving type checker, and cryptic type errors. Extensive research has sought to alleviate these challenges \cite{Tirronen2015-nr, Chen2014-dz, Heeren2003-kd, Zhang2015-xy, Lerner2007-mu, Zhang2017-tj}. Programmers often find type error messages in Haskell are excessively terse, confusing, and misleading. For example, as illustrated in Fig.~\ref{fig:motivation}, a type mismatch between a {\tt Char} and an integer leads to perplexing errors, particularly for novice users. We have identified three primary issues contributing to the difficulty of interpreting these error messages:
+Haskell is renowned for its expressive and robust type system, which allows programmers to develop programs in a type-driven manner. Innovations in type systems frequently pioneered from Haskell, such as algebraic data types, type inference, and type classes, have been incorporated into mainstream programming languages \cite{Hudak2007-kn, TypeScriptTeam_undated-qk, Klabnik_undated-mp, Griesemer_undated-ff}. Despite the advanced type system, Haskell is equally known for its steep learning curve, unforgiving type checker, and cryptic type errors. Extensive research has sought to alleviate these challenges \cite{Tirronen2015-nr, Chen2014-dz, Heeren2003-kd, Zhang2015-xy, Lerner2007-yq, Zhang2017-tj}. Programmers often find type error messages in Haskell are excessively terse, confusing, and misleading. For example, as illustrated in Fig.~\ref{fig:motivation}, a type mismatch between a {\tt Char} and an integer leads to perplexing errors, particularly for novice users. We have identified three primary issues contributing to the difficulty of interpreting these error messages:
 
 \begin{enumerate}
     \item The errors are biased towards a single potential cause, neglecting other plausible causes.

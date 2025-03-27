@@ -7,3 +7,5 @@ auto
 _region_*
 *.bbl
 *.blg
+*.fdb_latexmk
+*.fls
