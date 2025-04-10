@@ -315,8 +315,8 @@ Multi-witness type errors are also common in practice. They often occur when cha
   \caption{\label{fig:multi-party-2} Analysis of a multi-party type error regarding the list \texttt{d}, which could alternately be typed as \texttt{[Int]}, \texttt{[String]}, or \texttt{[Char]}. The conflict is depicted as a disagreement among three parties (Top Right). An analysis based on the source code generates 5 constraints (Bottom Left), leading to 3 distinct Minimal Unsatisfiable Subsets (MUSes). Notably, this scenario differs from the multiple witness type error as no single constraint appears across all MUSes.}
   \end{figure}
 
-  A multi-party type error features several irreconcilable type assignments stemming from different locations within the source code. Like multi-witness errors, multi-party errors contain multiple MUSes. In the multi-party type error shown in Fig.~\ref{fig:multi-party-2}, there are three MUSes: $\{C3, C4\}, \{C3, C5\}, \{C4, C5\}$. Unlike the multi-witness scenario, no single element appears across all MUSes, suggesting a more complex type error scenario. Generally, if a multi-party type error contains $n$ parties, then there are $n (n - 1) / 2$ unique MUSes.
-
+  A multi-party type error features several irreconcilable type assignments stemming from different locations within the source code. Like multi-witness errors, multi-party errors contain multiple MUSes. In the multi-party type error shown in Fig.~\ref{fig:multi-party-2}, there are three MUSes: $\{C3, C4\}, \{C3, C5\}, \{C4, C5\}$. Unlike the multi-witness scenario, no single element appears across all MUSes, suggesting a more complex type error scenario. Generally, if a multi-party type error contains $n$ parties, then there are $\binom{n}{2}$, or $n (n - 1) / 2$ unique MUSes.
+  
 Multi-party type errors are not common in real-life programs. They can happen when programmers mix the order of multiple arguments in a function application.  
   
 We provide some strategies to improve type error diagnostics for each category:
@@ -463,7 +463,7 @@ Goanna's high accuracy and reliability come at the tradeoff of its computational
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.7\linewidth]{images/performance-overall.png}
+    \includegraphics[width=\linewidth]{images/ToolCompare}
     \caption{{\bf Goanna's performance compared to GHC and Helium.} GHC is the fastest among all three (mean=0.09s, median=0.09s), followed by Helium (mean=0.31s, median=0.31s). Goanna performed slower than other tools (mean=0.50s, median=0.42s).}
     \label{fig:performance}
 \end{figure}
@@ -475,7 +475,7 @@ To measure the impact of program size on Goanna's performance, we constructed fo
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/program-size.png}
+    \includegraphics[width=\linewidth]{images/SyntaxNodesDuration}
     \caption{{\bf Goanna's Performance with Respect to Program Size.} To evaluate the impact of program size on Goanna's performance, we generated four sets of programs: Set 1 contains a type error involving 2 locations, Set 2 contains a type error involving 10 locations, Set 3 contains a type error involving 20 locations, and Set 4 contains a type error involving 30 locations. For each set, we initiate testing with the minimal number of syntax nodes and progressively increase the program length to contain up to 1200 syntax nodes. This figure illustrates the time taken to generate type error diagnostics as a function of the number of syntax nodes for each set. The results indicate that the time required escalates with the size of the program, even when the type error remains consistent. Furthermore, it shows that more complex type errors require additional time for diagnosis, independent of the effect of program size.}
     \label{fig:node-size}
 \end{figure}
@@ -489,7 +489,7 @@ We generated five sets of programs differentiated by program length: Set 1 consi
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/multi-step.png}
+    \includegraphics[width=\linewidth]{images/MultiStepDuration}
     \caption{{\bf Impact of Multi-step Type Errors on Performance.} We generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-step type error comprising 3 steps and gradually increase up to 30 steps, maintaining constant program size. This figure illustrates the time required to generate type error diagnostics with respect to the number of steps involved in a type error. }
     \label{fig:multi-step-time}
 \end{figure}
@@ -500,7 +500,7 @@ Similar to evaluating multi-step type errors, we generated five sets of programs
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/multi-witness-time.png}
+    \includegraphics[width=\linewidth]{images/MultiWitnessDuration}
     \caption{{\bf Impact of Multi-witness Type Errors on Performance.} Similar to evaluating multi-step type errors, we generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-witness type error 1/3 witness, that is, 1 witness on one side of the type error and 3 on the other, and gradually increase up to 1/30 witnesses. This figure illustrates the time required to generate type error diagnostics with respect to the number of witnesses involved in a type error.}
     \label{fig:multi-witness-time}
 \end{figure}
@@ -523,7 +523,7 @@ f a = case a of
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/multi-party-time.png}
+    \includegraphics[width=\linewidth]{images/MultiPartyDuration}
     \caption{{\bf Impact of Multi-party Type Errors on Performance.} We generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-party type error comprising 3 parties and gradually increase up to 30 parties, maintaining constant program size. This figure illustrates the time required to generate type error diagnostics with respect to the number of parties involved in a type error. }
     
     \label{fig:multi-party-time}
@@ -544,7 +544,7 @@ It is important to note that our benchmarking aims to evaluate the performance c
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{images/DurationByCategory.png}
+    \includegraphics[width=\linewidth]{images/Compare}
 \caption{{\bf Performance Comparison Across Three Categories of Type Errors.} The {\it x}-axis indicates the number of syntax nodes in the program, whereas the {\it y}-axis signifies the number of locations involved in the type error. In the case of multi-step type errors, the number of locations corresponds to the number of steps; for multi-witness type errors, it corresponds to the number of witnesses; and for multi-party type errors, it represents the number of parties. The color scale indicates the time required to generate type error diagnostics, which is represented on a square-root scale to more accurately reflect the computational time increase.}
     \label{fig:compare-time}
 \end{figure}
