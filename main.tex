@@ -570,15 +570,15 @@ Unlike conventional compilers, which add constraints one at a time, Goanna appli
 
 \paragraph{Meaningful and Familiar Idioms to Better Understand Type Errors}
 
-Goanna uses MCS as the building block of a type error diagnosis. This choice allows type errors to be presented as a list of possible causes; each cause shows the smallest set of changes required to fully resolve the error. Goanna is not unique in employing this paradigm of debugging errors. This type of error diagnosis has been utilized in various user interface designs, such as spell-check tools (Fig. \ref{fig:ispell}). Additionally, Goanna allows programmers to preview each possible cause: when navigating to a cause, locations that need to be changed are highlighted, and the effect of these changes on the program semantics and types is reflected through dynamically updated type hints. This interface idiom is analogous to how to merge conflict resolution tools in modern version control systems.
+Goanna uses MCS as the building block of a type error diagnosis. This choice allows type errors to be presented as a list of possible causes; each cause shows the smallest set of changes required to fully resolve the error. Goanna is not unique in employing this paradigm of debugging errors. This type of error diagnosis has been utilized in various user interface designs, such as spell-check tools. Additionally, Goanna allows programmers to preview each possible cause: when navigating to a cause, locations that need to be changed are highlighted, and the effect of these changes on the program semantics and types is reflected through dynamically updated type hints. This interface idiom is analogous to how to merge conflict resolution tools in modern version control systems.
 
-\begin{figure}[hbt]
-  \centering
-  \includegraphics[width=0.95\linewidth]{images/ispell}
-  \caption{{\bf A text editor (Emacs) displays a spelling error with multiple correction suggestions.} The word {\it "Haskll"} is misspelled, and several candidates are shown at the top of the screen. The first suggestion is the correct spelling correction.}
-  \label{fig:ispell}
-\end{figure}
-\pjs{Dont believe Fig 25 is adding anything useful!}
+% \begin{figure}[hbt]
+%   \centering
+%   \includegraphics[width=0.95\linewidth]{images/ispell}
+%   \caption{{\bf A text editor (Emacs) displays a spelling error with multiple correction suggestions.} The word {\it "Haskll"} is misspelled, and several candidates are shown at the top of the screen. The first suggestion is the correct spelling correction.}
+%   \label{fig:ispell}
+% \end{figure}
+
 
 \paragraph{Full Type Hints on ill-typed Program}
 
