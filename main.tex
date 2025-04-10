@@ -68,13 +68,14 @@
 
 %% as per the requirement new theorem styles can be included as shown below
 
+\newcommand{\pjs}[1]{\textcolor{blue}{\textsc{Pjs:} #1}}
 
 \raggedbottom
 %%\unnumbered% uncomment this for unnumbered level heads
 
 \begin{document}
 
-\title{Goanna: A Reasonable Approach for Type Error Debugging}
+\title{Goanna: The Most Reasonable Approach for Type Error Debugging}
 
 %%=============================================================%%
 %% GivenName	-> \fnm{Joergen W.}
@@ -389,7 +390,7 @@ Sometimes, it is insightful to inform programmers multiple type errors are relat
         \label{fig:specificity}
     \end{figure}
 
-    In the example in Fig.~\ref{fig:specificity}, Goanna can suggest two potential causes and fixes. First, change the integer literal \texttt{3} to a \texttt{Bool} type. Second, change the function \texttt{not} to a different function that accepts an integer as input. The second fix results in variable \texttt{x} having a less concrete type. Indeed, \texttt{x} can have any type if not limit what function to replace \texttt{not} with. Goanna prioritizes the first cause over the second. 
+    In the example in Fig.~\ref{fig:specificity}, Goanna can suggest two potential causes and fixes. First, change the integer literal \texttt{3} to a \texttt{Bool} type. Second, change the function \texttt{not} to a different function that accepts an integer as input. The second fix results in variable \texttt{x} having a less concrete type. Indeed, \texttt{x} can have any type if we dont limit what function to replace \texttt{not} with. Goanna prioritizes the first cause over the second. 
 
     
        
@@ -447,7 +448,7 @@ We compared Goanna with the Glasgow Haskell Compiler (GHC) version 9.4 \cite{Gam
         \label{fig:reliability}
     \end{figure}
 
-\textbf{Reliability:} As shown in Fig.~\ref{fig:reliability}, GHC is the least reliable (84.55\%), while Helium has modestly better reliability (88.20\%). Goanna-1 and Goanna-3 both achieve the higher reliability of over 90\%. In this, GHC and Helium are both unsuccessful when multi-witness type errors and multi-party type errors occur. Both of these tools report only a single location. Helium performs better than GHC because Helium sometimes reports errors on a larger syntax block, such as a list expression or a function application. This larger syntax block is often general enough to encompass the entire multiple error locations in the leaf nodes. GHC tends to report on leaf nodes and often results in less reliable error diagnostics. Note that Goanna-3's reliability can be worth than Goanna-1. This happens because of the cases when Goanna-3 includes a cause that cannot lead to a successful resolution in its second or third ranking cause. 
+\textbf{Reliability:} As shown in Fig.~\ref{fig:reliability}, GHC is the least reliable (84.55\%), while Helium has modestly better reliability (88.20\%). Goanna-1 and Goanna-3 both achieve the higher reliability of over 90\%. In this, GHC and Helium are both unsuccessful when multi-witness type errors and multi-party type errors occur. Both of these tools report only a single location. Helium performs better than GHC because Helium sometimes reports errors on a larger syntax block, such as a list expression or a function application. This larger syntax block is often general enough to encompass the entire multiple error locations in the leaf nodes. GHC tends to report on leaf nodes and often results in less reliable error diagnostics. Note that Goanna-3's reliability can be worse than Goanna-1. This happens because of the cases when Goanna-3 includes a cause that cannot lead to a successful resolution in its second or third ranking cause. 
     \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{images/ErrorCompare}
@@ -456,10 +457,10 @@ We compared Goanna with the Glasgow Haskell Compiler (GHC) version 9.4 \cite{Gam
     \end{figure}
 
 
-\textbf{Example:} Figure \ref{fig:error-compare} illustrates the differences among GHC, Helium, and Goanna when analyzing the erroneous function {\tt fac}. In this instance, GHC generated an error message that identified an incorrect location and was misleading. GHC suggested that implementing an instance of {\tt Num Bool} would resolve the issue, which is not the case, displaying a lack of both accuracy and reliability. On the other hand, Helium's error report highlighted the general area of the root cause but failed to localize the issue, which was a misspelled operator. However, following Helium's suggestion to replace the expression {\tt n == 1} with an expression of type {tit Int} indeed resolved the error, demonstrating reliability in this instance. Goanna's top recommendation, Goanna-1, accurately identified the location of the issue and provided a correct typing suggestion, recommending the replacement of {\tt ==} with a function of type {\tt Int -> Int -> Int}. Goanna-1 was both accurate and reliable in this example.
+\textbf{Example:} Figure \ref{fig:error-compare} illustrates the differences among GHC, Helium, and Goanna when analyzing the erroneous function {\tt fac}. In this instance, GHC generated an error message that identified an incorrect location and was misleading. GHC suggested that implementing an instance of {\tt Num Bool} would resolve the issue, which is not the case, displaying a lack of both accuracy and reliability. On the other hand, Helium's error report highlighted the general area of the root cause but failed to localize the issue, which was a misspelled operator. However, following Helium's suggestion to replace the expression {\tt n == 1} with an expression of type {\tt Int} indeed resolved the error, demonstrating reliability in this instance. Goanna's top recommendation, Goanna-1, accurately identified the location of the issue and provided a correct typing suggestion, recommending the replacement of {\tt ==} with a function of type {\tt Int -> Int -> Int}. Goanna-1 was both accurate and reliable in this example.
     
 \subsection{Performance} \label{sub:eval-performance}
-Goanna's high accuracy and reliability come at the tradeoff of its computational complexity. As we can see in Fig. Fig.~\ref{fig:performance} when measuring the time required to generate full type error diagnoses on our datasets, Goanna is slower than other tools: GHC (mean=0.09s, median=0.09s), Helium (mean=0.31s, median=0.31s), and Goanna (mean=0.50s, median=0.42s). Additionally, Goanna exhibits a larger variation in performance. Since Goanna continues until all causes are detected and ranked, there is no distinction between Goanna-1 and Goanna-3 in respect of performance.
+Goanna's high accuracy and reliability come at the tradeoff of its computational complexity. As we can see in Fig. Fig.~\ref{fig:performance} when measuring the time required to generate full type error diagnoses on our datasets, Goanna is slower than other tools: GHC (mean=0.09s, median=0.09s), Helium (mean=0.31s, median=0.31s), and Goanna (mean=0.50s, median=0.42s). Additionally, Goanna exhibits a larger variation in performance. Since Goanna continues until all causes are detected and ranked, there is no distinction between Goanna-1 and Goanna-3 in respect to performance.
 
 \begin{figure}[ht!]
     \centering
@@ -496,7 +497,9 @@ We generated five sets of programs differentiated by program length: Set 1 consi
 
 \paragraph{Multi-witness Type Errors}
 
-Similar to evaluating multi-step type errors, we generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-witness type error 1/3 witness, that is, 1 witness on one side of the type error and 3 on the other, and gradually increase up to 1/30 witnesses. These errors were generated using the form \lstinline{x y = case y of 1 -> 1; '2' -> 2; '3' -> 3, ..., 'N' -> N}. Fig.~\ref{fig:multi-witness-time} illustrates the time required to generate type error diagnostics with respect to the number of witnesses involved in a type error. With 30 error locations and 200 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds. In addition, we can visually identify the linear growth in computation time because we only increase the number of witnesses on one side. Recall that for a type error that involves $m$ witnesses on one side and $n$ on the other, there will be a total of $m \times n$ MUSes.
+Similar to evaluating multi-step type errors, we generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-witness type error 1/3 witness, that is, 1 witness on one side of the type error and 3 on the other, and gradually increase up to 1/30 witnesses. These errors were generated using the form 
+\pjs{Problem here}
+\lstinline{x y = case y of 1 -> 1; '2' -> 2; '3' -> 3, ..., 'N' -> N}. Fig.~\ref{fig:multi-witness-time} illustrates the time required to generate type error diagnostics with respect to the number of witnesses involved in a type error. With 30 error locations and 200 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds. In addition, we can visually identify the linear growth in computation time because we only increase the number of witnesses on one side. Recall that for a type error that involves $m$ witnesses on one side and $n$ on the other, there will be a total of $m \times n$ MUSes.
 
 \begin{figure}[ht]
     \centering
@@ -520,6 +523,7 @@ f a = case a of
   ...
   X_N -> N
 \end{lstlisting}
+\pjs{Problem here: font!!!}
 
 \begin{figure}[ht]
     \centering
@@ -532,7 +536,7 @@ f a = case a of
 \paragraph{Performance Summary}
 The size of the program influences Goanna's performance, as do the category and complexity of errors. Specifically, multi-party errors pose the greatest computational challenge among the various categories, followed by multi-witness and multi-step errors (see Fig.~\ref{fig:compare-time}). We showed that this performance constraint is approximately correlated with the number of Minimal Unsatisfiable Subsets (MUSes) in the type error. Following this insight, we discuss several avenues to improve the performance of Goanna and systems using similar techniques in Section \ref{sec:optimizing-performance}.
 
-It is important to note that our benchmarking aims to evaluate the performance characteristics of Goanna under stress conditions. Some of the samples we generated are unlikely to appear in typical programming scenarios. Generally, common type errors in smaller programs (fewer than 100 lines of code) can be resolved by Goanna within approximately one second, making it well-suited for providing real-time feedback to programmers. All defective programs in our datasets are diagnosed in under 1 second. However, Goanna demonstrates moderate performance when diagnosing larger programs (exceeding 100 lines) or handling extreme type errors, such as multi-party errors involving numerous parties. In such cases, it is more practical for Goanna to offer asynchronous, on-demand diagnosis rather than real-time feedback. 
+It is important to note that our benchmarking aims to evaluate the performance characteristics of Goanna under stress conditions. Some of the samples we generated are unlikely to appear in typical programming scenarios. Generally, common type errors in smaller programs (fewer than 100 lines of code) can be resolved by Goanna within approximately one second, within the waiting time tolerance for real-time feedback to programmers \cite{Ferdowsi2023-au}. All defective programs in our datasets are diagnosed in under 1 second. However, Goanna demonstrates moderate performance when diagnosing larger programs (exceeding 100 lines) or handling extreme type errors, such as multi-party errors involving numerous parties. In such cases, it is more practical for Goanna to offer asynchronous, on-demand diagnosis rather than real-time feedback. 
 
 
 % \begin{figure}[ht]
@@ -552,7 +556,7 @@ It is important to note that our benchmarking aims to evaluate the performance c
 
 \section{Discussion} \label{sec:discussion}
 
-This section comprises three parts. We begins with examining Goanna's accuracy and reliability, along with its practical advantages over traditional tools. We then analyze the trade-offs made in Goanna's performance and explore avenues to improve on this limitation. Finally, we compare the strengths and weaknesses of Goanna with Large Language Model (LLM)-based programming assistance and explore how these two approaches can be integrated for optimal benefits.
+This section comprises three parts. We begin with examining Goanna's accuracy and reliability, along with its practical advantages over traditional tools. We then analyze the trade-offs made in Goanna's performance and explore avenues to improve on this limitation. Finally, we compare the strengths and weaknesses of Goanna with Large Language Model (LLM)-based programming assistance and explore how these two approaches can be integrated for optimal benefits.
 
 \subsection{Strengths of Goanna and MCS-based Error Diagnostics}
 
@@ -574,6 +578,7 @@ Goanna uses MCS as the building block of a type error diagnosis. This choice all
   \caption{{\bf A text editor (Emacs) displays a spelling error with multiple correction suggestions.} The word {\it "Haskll"} is misspelled, and several candidates are shown at the top of the screen. The first suggestion is the correct spelling correction.}
   \label{fig:ispell}
 \end{figure}
+\pjs{Dont believe Fig 25 is adding anything useful!}
 
 \paragraph{Full Type Hints on ill-typed Program}
 
@@ -618,7 +623,8 @@ While LLMs have shown capability in recognizing basic errors, they often display
     } 
 \end{figure}
 
-When tested with the prompt "Is there a type error in the Haskell code: v = let f x = x in (f 3, f '3')", most LLMs incorrectly reported yes (Fig.~\ref{fig:llm2}). However, this Haskell code is indeed well-typed. LLMs can give wrong explanations and find type errors that do not exist, unlike tools like GHC, Helium, and Goanna. While there is clearly a role for their usage in programming assistance \cite{Lee2024-hs}, they do not “reason” about types and, hence, are not trustworthy.
+When tested with the prompt ``Is there a type error in the Haskell code: 
+\verb+v = let f x = x in (f 3, f '3')+'', most LLMs incorrectly reported yes (Fig.~\ref{fig:llm2}). However, this Haskell code is indeed well-typed. LLMs can give wrong explanations and find type errors that do not exist, unlike tools like GHC, Helium, and Goanna. While there is clearly a role for their usage in programming assistance \cite{Lee2024-hs}, they do not “reason” about types and, hence, are not trustworthy.
 
 While LLMs are getting more and more accurate with each iteration, some doubt whether they will ever become as reliable as theory-based tools \cite{Berglund2023-ig}. We believe in the great potential of integrating LLMs with existing theory-based tools, such as Goanna. This integration could enhance the performance of LLMs by aligning their operations with accurate theoretical guides or utilizing their strengths to complement traditional tools' shortcomings, such as suggesting syntactical improvements and coming up with personalized error messages suited for the programmer's skill level. This synergy could lead to more robust programming assistance using both types of tools. We propose two candidate workflows:
 
