@@ -496,7 +496,7 @@ Goanna's high accuracy and reliability come at the tradeoff of its computational
     \label{fig:performance}
 \end{figure}
 
-The computational expense of Goanna is primarily attributed to Minimal Unsatisfiable Subset (MUS) enumeration, which is constrained by two key factors. The first factor is the cost of identifying a single MUS, determined by the size of the program. The algorithm for finding an MUS involves the repeated removal of a single random constraint followed by satisfiability testing, a process known as "shrink". Since the number of constraints corresponds to the number of syntax nodes in the program, longer programs necessitate more satisfiability checks, resulting in a longer "shrink" process. The second factor is the total number of MUSes, which depends on the category (Section \ref{sec:categories}) of the type error in question. Consequently, we analyzed performance based on program size and type error category.
+The computational expense of Goanna is primarily attributed to Minimal Unsatisfiable Subset (MUS) enumeration, which is constrained by two key factors. The first factor is the cost of identifying a single MUS, determined by the size of the program. The algorithm for finding an MUS involves the repeated removal of a single random constraint followed by satisfiability testing, a process known as ``{\it shrink}". Since the number of constraints corresponds to the number of syntax nodes in the program, longer programs necessitate more satisfiability checks, resulting in a longer ``{\it shrink}" process. The second factor is the total number of MUSes, which depends on the category (Section \ref{sec:categories}) of the type error in question. Consequently, we analyzed performance based on program size and type error category.
 
 \paragraph{Program Size:}
 To measure the impact of program size on Goanna's performance, we constructed four sets of programs: Set 1 contains a type error involving 2 locations, Set 2 contains a type error involving 10 locations, Set 3 contains a type error involving 20 locations, and Set 4 contains a type error involving 30 locations. For each set, we initiate testing with the minimal number of syntax nodes and progressively increase the program length to contain up to 1200 syntax nodes, while the attributes of the type error remain unchanged. Fig.~\ref{fig:node-size} demonstrates the impact of program size on the time taken to generate type error diagnostics. It shows that Goanna's performance is slowed down with the increase in the size of the program; this holds true even when the type error remains unchanged. The diagnosis takes 0.25 seconds with 200 syntax nodes (approximately 20 lines of code) for a type error involving two potential fix locations. Still, it increases to 7 seconds with 1200 syntax nodes (approximately 120 lines of code). Furthermore, it shows that more complex type errors require additional time for diagnosis, independent of the effect of program size.
@@ -508,12 +508,21 @@ To measure the impact of program size on Goanna's performance, we constructed fo
     \label{fig:node-size}
 \end{figure}
 
-It is worth clarifying that performance bottlenecks are primarily due to MUS enumeration rather than parsing or static analysis, as these processes are negligible for reasonably sized programs. Also, note that other files in the projects that are not currently being inspected and 3rd party library files do not contribute to the computation cost of MUS. Those files are translated into constraints but are considered basic assumptions and do not participate in the shrink process.
+It is worth clarifying that performance bottlenecks are primarily due to MUS enumeration rather than parsing or static analysis, as these processes are negligible for reasonably sized programs. Also, having more files in the project and using third party libraries {\bf do not contribute to the computation overhead}. Although those files are translated into constraints, they are considered as basic assumptions and do not participate in the {\it shrink} process.
 
 \paragraph{Multi-step Type Errors}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{images/MultiStepMutation}
+    \caption{{\bf Example of generating multi-step type errors with various number of steps.} In this example, we generated 3 Haskell programs, each containing a multi-step type error. The type error in program 1 (left) contains 3 steps; the one in program 2 (middle) contains 4 steps; the one in program 3 (right) contains 5 steps. All 3 programs contains 24 syntax nodes. The second element of the 2-tuple is used to balance the length of the program. }
+    \label{fig:multi-step-mutation}
+\end{figure}
+
 To better understand the effect of multi-step type errors on performance,
-We generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-step type error comprising 3 steps and gradually increase up to 30 steps, maintaining constant program size. Fig.~\ref{fig:multi-step-time} plots the time required to generate type error diagnostics as a function of the number of steps involved in a type error.  It can be seen that the impact of program size is independent of the effects of the number of steps in the errors. For a program with 200 syntax nodes, it takes 0.275 seconds to diagnose; with 30 steps, it requires 2.8 seconds. For the program with 1000 syntax nodes, 2-step errors take 5 seconds, and 30-step errors take 9 seconds.
+We generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-step type error comprising 3 steps and gradually increase up to 30 steps, maintaining constant program size. Fig. \ref{fig:multi-step-mutation} details the methods of generating multi-step type errors with various number of steps while maintaining the constant program size.
+
+Fig.~\ref{fig:multi-step-time} plots the time required to generate type error diagnostics as a function of the number of steps involved in a type error.  It can be seen that the impact of program size is independent of the effects of the number of steps in the errors. For a program with 200 syntax nodes, it takes 0.275 seconds to diagnose; with 30 steps, it requires 2.8 seconds. For the program with 1000 syntax nodes, 2-step errors take 5 seconds, and 30-step errors take 9 seconds.
 
 \begin{figure}[ht]
     \centering
@@ -524,9 +533,17 @@ We generated five sets of programs differentiated by program length: Set 1 consi
 
 \paragraph{Multi-witness Type Errors}
 
-Similar to evaluating multi-step type errors, we generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-witness type error 1/3 witness, that is, 1 witness on one side of the type error and 3 on the other, and gradually increase up to 1/30 witnesses. These errors were generated using the form 
-\pjs{Problem here}
-\lstinline{x y = case y of 1 -> 1; '2' -> 2; '3' -> 3, ..., 'N' -> N}. Fig.~\ref{fig:multi-witness-time} illustrates the time required to generate type error diagnostics with respect to the number of witnesses involved in a type error. With 30 error locations and 200 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds. In addition, we can visually identify the linear growth in computation time because we only increase the number of witnesses on one side. Recall that for a type error that involves $m$ witnesses on one side and $n$ on the other, there will be a total of $m \times n$ MUSes.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{images/MultiWitnessMutation}
+    \caption{{\bf Example of generating multi-witness type errors with various number of witnesses.} In this example, we generated 3 Haskell programs, each containing a multi-witness type error. The type error in program 1 (left) contains 1 and 2 witnesses on each side, denoted as $(1, 2)$; the one in program 2 (middle) contains $(1, 3)$ witnesses; the one in program 3 (right) contains $(1, 4)$ witnesses. All 3 programs contains 45 syntax nodes. The second argument of function {\it f} and the second element of the 2-tuple are used to balance the length of the program.
+    } 
+    \label{fig:multi-witness-mutation}
+\end{figure}
+
+Similar to evaluating multi-step type errors, we generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-witness type error with 1 witness on one side of the type error and 3 on the other, denoted as $(1, 2)$. We gradually increase the number of witnesses up to $(1, 30)$. Fig. \ref{fig:multi-witness-mutation} details the methods of generating multi-step type errors with various number of steps while maintaining the constant program size.
+
+Fig.~\ref{fig:multi-witness-time} illustrates the time required to generate type error diagnostics with respect to the number of witnesses involved in a type error. With 30 error locations and 200 syntax nodes, diagnosis takes a similar time as multi-step errors. With 1000 syntax nodes, it takes over 43.68 seconds. In addition, we can visually identify the linear growth in computation time because we only increase the number of witnesses on one side. Recall that for a type error that involves $m$ witnesses on one side and $n$ on the other, there will be a total of $mn$ MUSes.
 
 \begin{figure}[ht]
     \centering
@@ -537,20 +554,19 @@ Similar to evaluating multi-step type errors, we generated five sets of programs
 
 \paragraph{Multi-party Type Errors}
 
-Multi-party type errors are often multiple simple errors fused into one and are the most computationally intensive. Again, we generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-party type error comprising 3 parties and gradually increase up to 30 parties, maintaining constant program size. The generated programs follow the form dipicted in Listing~\ref{lst:eval-multi-party}. Note that this experiment does not mean to be representative of realistic type error. It is often improbable to have more than 3 parties in real-world programming; for more than that, programmers have to ignore an existing type error and continue adding more ill-typed code fragments. Our results (Fig.~\ref{fig:multi-party-time}) show that, for 30 error locations and 200 syntax nodes, diagnosis requires 3.15 seconds; with 1000 nodes, it takes over two minutes. Recall that for a multi-party type error with $n$ parties, there are $n (n - 1) / 2$ unique MUSes. The growth pattern in computation time roughly reflects this correlation.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{images/MultiPartyMutation}
+    \caption{{\bf Example of generating multi-party type errors with various number of witnesses.} In this example, we generated 3 Haskell programs, each containing a multi-party type error. The type error in program 1 (left) contains 3 parties; program 2 (middle) contains 4 parties; program 3 (right) contains 4 parties. All 3 programs contains 65 syntax nodes. The second argument of function {\it f} and the second element of the 2-tuple are used to balance the length of the program.}
+    \label{fig:multi-party-mutation}
+\end{figure}
 
-\begin{lstlisting}[caption={{\bf Multi-party error generation example}. To study the effect of multi-party type errors on performance, we generated programs with different number of $N$, ranging from 3 to 30.}, label={lst:eval-multi-party}]
-data X_1 = X_1
-data X_2 = X_2
-...
-data X_N = X_N
-f a = case a of
-  X_1 -> 1
-  X_2 -> 2
-  ...
-  X_N -> N
-\end{lstlisting}
-\pjs{Problem here: font!!!}
+Multi-party type errors are often multiple simple errors fused into one and are the most computationally intensive. Again, we generated five sets of programs differentiated by program length: Set 1 consists of 200 nodes, Set 2 consists of 400 nodes, Set 3 consists of 600 nodes, Set 4 consists of 800 nodes, and Set 5 consists of 1000 nodes. For each set, we initiate with a multi-party type error comprising 3 parties and gradually increase up to 30 parties, maintaining constant program size. Fig. \ref{fig:multi-party-mutation} details the methods of generating multi-step type errors with various number of steps while maintaining the constant program size.
+
+Our results (Fig.~\ref{fig:multi-party-time}) show that, for 30 error locations and 200 syntax nodes, diagnosis requires 3.15 seconds; with 1000 nodes, it takes over two minutes. Recall that for a multi-party type error with $n$ parties, there are $n (n - 1) / 2$ unique MUSes. The growth pattern in computation time roughly reflects this correlation.
+
+Note that this experiment does not mean to be representative of realistic type error. It is often improbable to have more than 3 parties in real-world programming; for more than that, programmers have to ignore an existing type error and continue adding more ill-typed code fragments.
+
 
 \begin{figure}[ht]
     \centering
