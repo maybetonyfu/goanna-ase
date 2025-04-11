@@ -185,7 +185,7 @@ In this section, we demonstrate Goanna's features using some real-world examples
 
     \begin{figure}[ht!]
         \centering
-        \includegraphics[width=\linewidth]{images/Goanna-Example-1}
+        \includegraphics[width=\linewidth]{images/Goanna-Example-1.pdf}
         \caption[Goanna's showing possible causes of a type error (1)]{\textbf{Goanna's error diagnosis} Goanna shows that to fix the type error, the literals \texttt{1}, \texttt{2}, and \texttt{3} on line 1 need to be changed to Char type.}
         \label{fig:goanna-example-1}
     \end{figure}
@@ -196,7 +196,7 @@ In this section, we demonstrate Goanna's features using some real-world examples
 
     \begin{figure}[ht!]
         \centering
-        \includegraphics[width=\linewidth]{images/goanna-example-2}
+        \includegraphics[width=\linewidth]{images/goanna-example-2.pdf}
         \caption[Goanna's showing possible causes of a type error (2)]{\textbf{Goanna's error diagnosis.} Goanna shows that the type error can be fixed by changing the literal $'1'$ on line 3, which needs an \texttt{Int} type. This, according to Goanna, is the most likely cause of the type error.}
         \label{fig:goanna-example-2}
     \end{figure}
@@ -212,7 +212,7 @@ In this section, we demonstrate Goanna's features using some real-world examples
 
     \begin{figure}[ht!]
         \centering
-        \includegraphics[width=\linewidth]{images/goanna-multi-error}
+        \includegraphics[width=\linewidth]{images/Goanna-Multi-Error.pdf}
         \caption[Selecting a different error in Goanna]{\textbf{Selecting a different error in Goanna.} Selecting a different error using Goanna's error selector. The debugging panel will show potential cause locations for the selected error. The highlights and type hints in the editor panel will focus on the selected error.}
         \label{fig:multi-error}
     \end{figure}
@@ -230,7 +230,7 @@ In this section, we demonstrate Goanna's features using some real-world examples
     
         \begin{figure}[ht!]
         \centering
-        \includegraphics[width=\linewidth]{images/Goanna-Error-Grouping}
+        \includegraphics[width=\linewidth]{images/Goanna-Error-Grouping.pdf}
         \caption[Goanna's Error Grouping]{\textbf{Goanna's Error Grouping.} This error, although its potential offending parts appear in many declarations, is possible to fix in one place, i.e., by changing the definition of the \texttt{size} function on line 1. Therefore, Goanna reports it as a single error.}
         \label{fig:grouping-goanna}
     \end{figure}
@@ -623,7 +623,7 @@ Goanna uses MCS as the building block of a type error diagnosis. This choice all
 % \end{figure}
 
 
-\paragraph{Full Type Hints on ill-typed Program}
+\paragraph{Full Type Hints on Ill-typed Program}
 
 In statically typed languages, particularly those like Haskell, where expressions are implicitly typed (type annotations are optional), understanding the types of various expressions is an integral part of making sense of the program. Traditional approaches run in interactive shells or command lines, such as \texttt{:t expression} command the interactive shell for Haskell (Fig. \ref{fig:typehints} Left). Modern editors enhance this functionality by providing text overlays for instant type overview (Fig. \ref{fig:typehints} Right). However, these type hints are available only when the program is well-typed; they either become unavailable or outdated when type errors occur. This limits their usefulness, as they are much more needed when resolving type errors.
 
