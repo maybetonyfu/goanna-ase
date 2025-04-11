@@ -116,9 +116,9 @@ Statically typed languages manifest in multiple paradigms. Functional programmin
 Haskell is renowned for its expressive and robust type system, which allows programmers to develop programs in a type-driven manner. Innovations in type systems frequently pioneered from Haskell, such as algebraic data types, type inference, and type classes, have been incorporated into mainstream programming languages \cite{Hudak2007-kn, TypeScriptTeam_undated-qk, Klabnik_undated-mp, Griesemer_undated-ff}. Despite the advanced type system, Haskell is equally known for its steep learning curve, unforgiving type checker, and cryptic type errors. Extensive research has sought to alleviate these challenges \cite{Tirronen2015-nr, Chen2014-dz, Heeren2003-kd, Zhang2015-xy, Lerner2007-yq, Zhang2017-tj}. Programmers often find type error messages in Haskell are excessively terse, confusing, and misleading. For example, as illustrated in Fig.~\ref{fig:motivation}, a type mismatch between a {\tt Char} and an integer leads to perplexing errors, particularly for novice users. We have identified three primary issues contributing to the difficulty of interpreting these error messages:
 
 \begin{enumerate}
-    \item The errors are biased towards a single potential cause, neglecting other plausible causes.
-    \item Making changes to the suggested location does not always resolve the error entirely.
-    \item Insufficient contextual information is provided, hindering the programmer's ability to understand the underlying rationale of the error message.
+    \item The errors are \textbf{\textit{biased towards a single potential cause}}, neglecting other plausible causes;
+    \item Making changes to the suggested location \textbf{\textit{does not always resolve the error entirely}}; and
+    \item \textbf{\textit{Insufficient contextual information is provided}}, hindering the programmer's ability to understand the underlying rationale of the error message.
 \end{enumerate}
 
 
@@ -143,7 +143,34 @@ The main contributions of this research are:
 
 The techniques employed in Goanna, such as MUS enumeration and the ranking heuristics, are not confined to Haskell. These techniques are broadly applicable to statically typed programming languages, and Goanna is designed for adaptability across languages with similar type systems.
 
-\section{Goanna-IDE Walkthrough} \label{sec:walkthrough}
+\section{Related Work} 
+    \label{sec:related-work}
+    In this section, we survey the corpus of work that Goanna built upon and was inspired by. We first review the work that is built on a theoretical foundation similar to that of Goanna. We then examine studies that share similar aims and offer a debugging experience comparable to Goanna's. Finally, we delve into research on program slicing and discuss how Goanna extends the concept of slicing and distinguishes itself from its predecessors.
+
+    \subsection{MCS enumeration}
+	
+    MCS enumeration has been extensively studied in the field of error localization across various domains. MCS is used to optimize package management systems \cite{Ignatiev2014-nr} and to explain decisions made by machine learning algorithms \cite{Marques-Silva2023-nk}.
+    
+    
+    In the specific context of type error diagnosis and resolution, several related approaches have been explored. It is important to examine the strengths and weaknesses of Goanna in the context of these areas.
+
+One notable work~\cite{Lamraoui2016-wr} introduced a tool that utilizes the capability of MCSes to localize multiple faults and identify software defects using unit tests. Their approach demonstrated the effectiveness of MCS in pinpointing errors within a program. Similarly, Bekkouche conducted a relevant study~\cite{Bekkouche2015-is}  on MCS utilization for locating program errors in while-loop programs. Their findings showed improved efficiency compared to SAT-based approaches. Although showing strength in programming language static analysis, MCS-based fault localization has not been previously applied at the type system level. Goanna distinguishes itself as the first tool to explore this approach within the realm of type error diagnosis and resolution.
+    
+
+\subsection{Suggesting changes to type errors}
+
+Seminal~\cite{Lerner2007-yq} uses syntax mutation and binary search to find appropriate syntax changes to program errors. The advantage of Seminal is that it's capable of suggesting direct syntax changes to common mistakes (e.g., mistakingly swapping the order of function arguments). However, Seminal can't provide the complete set of all potential fixes. Nor does it guarantee a suggested solution is minimal syntax change.
+   
+   Counter-factual typing (CFT) \cite{Chen2014-dz,Chen2020-ad} uses a variation-based type system; it is capable of suggesting the correct type for all possible. CFT shares many capabilities with Goanna; CFT is able to suggest multiple-location changes, and CFT uses similar ranking heuristics. Goanna is able to produce an in-depth analysis of the ill-type program, such as type error isolation. CFT and Goanna both aim to produce a complete set of potential fixes; Goanna employs a set of effective algorithms to reduce the exponential number of potential fixes without reducing the quality of suggestions. 
+   
+   SHErrLoc \cite{Zhang2015-xy} uses constraints as the underlying to perform type inference and type error diagnoses. SHErrLoc is able to suggest multiple possible fixes of the type error and rank them based on heuristics. Unlike Goanna's approach of using a general-purpose constraint language, SHErrLoc relies on GHC's internal constraints and then translates them into SCL (a custom-made constraint language). On the technical side, this approach relies heavily on modification of the compiler and does not remain reliable with later GHCs. Most importantly, there is no way to interact directly with the solver. This renders the kind of constraint manipulation in Goanna and SHErrLoc impossible. Goanna is able to perform type reconstruction for ill-typed programs, that is, finding the most concrete types for all expressions for each potential solution using the Maximal Satisfiable Subsets. SHErrLoc focuses on finding the locations only.
+
+
+\subsection{Type Error Slicing}
+
+Type error slicing \cite{Haack2004-fr} is a technique to identify all necessary locations of a type error that is necessary for programmers to diagnose the root cause. It has been studied in many studies ever since \cite{Tip2001-qn, Heeren2003-kd}. These studies all use Minimal Unsatisfiable Subset (MUS) to ensure the \textit{completeness} and \textit{minimality}. The drawback of type error slicing is that it often produces too many locations.  Chameleon \cite{Stuckey2003-pz,Fu2021-xd} improved type error slicing by allowing programmers to interactively show the partial MUS by choosing their own assumptions. Compared to these tools that base their analysis on a single MUS, in Goanna we wanted  to effectively utilize all possible MUSes to enhance suggestions based on improved knowledge of the underlying type of error. Goanna uses the number of MUSes a location appears in to rank how likely this location is part of the root cause. This is not possible with a single MUS.  
+
+\section{An Overview of Goanna-IDE} \label{sec:walkthrough}
 In this section, we demonstrate Goanna's features using some real-world examples. To showcase the debugging features,  we developed Goanna-IDE, an interactive development environment for Haskell specializing in type error debugging. It makes extensive use of Goanna's type error diagnostics and delivers it to programmers through visualization and interactivity. An online demo of Goanna-IDE is available for evaluation at \cite{Fu2023-bo}. Goanna-IDE includes a file explorer, a text editor, and a debugging panel. Goanna-IDE provides the following key features when type errors are encountered:
 
     \begin{itemize}
@@ -390,7 +417,7 @@ Sometimes, it is insightful to inform programmers multiple type errors are relat
         \label{fig:specificity}
     \end{figure}
 
-    In the example in Fig.~\ref{fig:specificity}, Goanna can suggest two potential causes and fixes. First, change the integer literal \texttt{3} to a \texttt{Bool} type. Second, change the function \texttt{not} to a different function that accepts an integer as input. The second fix results in variable \texttt{x} having a less concrete type. Indeed, \texttt{x} can have any type if we dont limit what function to replace \texttt{not} with. Goanna prioritizes the first cause over the second. 
+    In the example in Fig.~\ref{fig:specificity}, Goanna can suggest two potential causes and fixes. First, change the integer literal \texttt{3} to a \texttt{Bool} type. Second, change the function \texttt{not} to a different function that accepts an integer as input. The second fix results in variable \texttt{x} having a less concrete type. Indeed, \texttt{x} can have any type if we don't limit what function to replace \texttt{not} with. Goanna prioritizes the first cause over the second. 
 
     
        
@@ -556,7 +583,7 @@ It is important to note that our benchmarking aims to evaluate the performance c
 
 \section{Discussion} \label{sec:discussion}
 
-This section comprises three parts. We begin with examining Goanna's accuracy and reliability, along with its practical advantages over traditional tools. We then analyze the trade-offs made in Goanna's performance and explore avenues to improve on this limitation. Finally, we compare the strengths and weaknesses of Goanna with Large Language Model (LLM)-based programming assistance and explore how these two approaches can be integrated for optimal benefits.
+We discuss Goanna's accuracy and reliability, along with its practical advantages over traditional tools. We then analyze the trade-offs made in Goanna's performance and explore avenues to improve on this limitation. Finally, we compare the strengths and weaknesses of Goanna with Large Language Model (LLM)-based programming assistance and explore how these two approaches can be integrated for optimal benefits.
 
 \subsection{Strengths of Goanna and MCS-based Error Diagnostics}
 
@@ -587,7 +614,7 @@ In statically typed languages, particularly those like Haskell, where expression
 \begin{figure}[hbt]
   \centering
   \includegraphics[width=\linewidth]{images/TypeHints.pdf}
-  \caption{\textbf{Different Approaches to Querying Types in Haskell.} In the Glasgow Haskell Compiler Interactive (GHCI), users employ the command \texttt{:t expression} to query type information. Modern integrated development environments (IDEs), such as Visual Studio Code, intrinsically display this type information inline within the code, thereby eliminating the need for programmers to make manual type queries.}
+  \caption{\textbf{Different Approaches to Querying Types in Haskell.} In the Glasgow Haskell Compiler Interactive (GHCI), users employ the command \texttt{:t expression} to query type information. Modern integrated development environments (IDEs), such as Visual Studio Code, intrinsically display this type-level information inline within the code, thereby eliminating the need for programmers to make manual type queries.}
   \label{fig:typehints}
 \end{figure}
 
@@ -610,7 +637,7 @@ LLMs were actively experimented with performing programming-related tasks such a
 \begin{figure}[hbt]
   \includegraphics[width=\linewidth]{images/LLM.pdf}
   \caption[LLM explaining a type error; it began very accurate, then went on to give incorrect and contradicting analysis]{\label{fig:llm}
-  The figure shows the user prompted LLM to explain the type error in a Haskell function definition \texttt{mapList}. LLM, at first, showed a profound understanding of the subject matter, clearly explained the intention of the function, and accurately identified the error location. In the last sentence, LLM claimed the definition would result in an infinite type because trying to unify \texttt{a} with \texttt{(a -> b) -> [a] -> [b]}. In reality, unifying two functions with different numbers of arguments will not cause infinite types. 
+  The figure shows the user prompted LLM to explain the type error in a Haskell function definition \texttt{mapList}. LLM, at first, showed a profound understanding of the subject matter, clearly explained the intention of the function, and accurately identified the error location. In the last sentence, LLM claimed the definition would result in an infinite type because of trying to unify \texttt{a} with \texttt{(a -> b) -> [a] -> [b]}. In reality, unifying two functions with different numbers of arguments will not cause infinite types. 
     }
 \end{figure}
 
@@ -633,49 +660,24 @@ While LLMs are getting more and more accurate with each iteration, some doubt wh
   \item {\textbf{Error Tutoring and Resolution}: Theory-based tools could identify errors in manually written code, with LLMs suggesting syntax corrections. This combines the precise error detection from traditional theory-based tools with the ability of LLMs to generate effective syntax changes, surpassing traditional tools in this domain.}
 }
 
-\section{Related Work} 
-    \label{sec:related-work}
-    In this section, we survey the corpus of work that Goanna built upon and was inspired by. We first review the work that is built on a theoretical foundation similar to that of Goanna. We then examine studies that share similar aims and offer a debugging experience comparable to Goanna's. Finally, we delve into research on program slicing and discuss how Goanna extends the concept of slicing and distinguishes itself from its predecessors.
 
-    \subsection{MCS enumeration}
-	
-    MCS enumeration has been extensively studied in the field of error localization across various domains. MCS is used to optimize package management systems \cite{Ignatiev2014-nr} and to explain decisions made by machine learning algorithms \cite{Marques-Silva2023-nk}.
-    
-    
-    In the specific context of type error diagnosis and resolution, several related approaches have been explored. It is important to examine the strengths and weaknesses of Goanna in the context of these areas.
-
-One notable work~\cite{Lamraoui2016-wr} introduced a tool that utilizes the capability of MCSes to localize multiple faults and identify software defects using unit tests. Their approach demonstrated the effectiveness of MCS in pinpointing errors within a program. Similarly, Bekkouche conducted a relevant study~\cite{Bekkouche2015-is}  on MCS utilization for locating program errors in while-loop programs. Their findings showed improved efficiency compared to SAT-based approaches. Although showing strength in programming language static analysis, MCS-based fault localization has not been previously applied at the type system level. Goanna distinguishes itself as the first tool to explore this approach within the realm of type error diagnosis and resolution.
-    
-
-\subsection{Suggesting changes to type errors}
-
-Seminal~\cite{Lerner2007-yq} uses syntax mutation and binary search to find appropriate syntax changes to program errors. The advantage of Seminal is that it's capable of suggesting direct syntax changes to common mistakes (e.g., mistakingly swapping the order of function arguments). However, Seminal can't provide the complete set of all potential fixes. Nor does it guarantee a suggested solution is minimal syntax change.
-   
-   Counter-factual typing (CFT) \cite{Chen2014-dz,Chen2020-ad} uses a variation-based type system; it is capable of suggesting the correct type for all possible. CFT shares many capabilities with Goanna; CFT is able to suggest multiple-location changes, and CFT uses similar ranking heuristics. Goanna is able to produce an in-depth analysis of the ill-type program, such as type error isolation. CFT and Goanna both aim to produce a complete set of potential fixes; Goanna employs a set of effective algorithms to reduce the exponential number of potential fixes without reducing the quality of suggestions. 
-   
-   SHErrLoc \cite{Zhang2015-xy} uses constraints as the underlying to perform type inference and type error diagnoses. SHErrLoc is able to suggest multiple possible fixes of the type error and rank them based on heuristics. Unlike Goanna's approach of using a general-purpose constraint language, SHErrLoc relies on GHC's internal constraints and then translates them into SCL (a custom-made constraint language). On the technical side, this approach relies heavily on modification of the compiler and does not remain reliable with later GHCs. Most importantly, there is no way to interact directly with the solver. This renders the kind of constraint manipulation in Goanna and SHErrLoc impossible. Goanna is able to perform type reconstruction for ill-typed programs, that is, finding the most concrete types for all expressions for each potential solution using the Maximal Satisfiable Subsets. SHErrLoc focuses on finding the locations only.
-
-
-\subsection{Type Error Slicing}
-
-Type error slicing \cite{Haack2004-fr} is a technique to identify all necessary locations of a type error that is necessary for programmers to diagnose the root cause. It has been studied in many studies ever since \cite{Tip2001-qn, Heeren2003-kd}. These studies all use Minimal Unsatisfiable Subset (MUS) to ensure the \textit{completeness} and \textit{minimality}. The drawback of type error slicing is that it often produces too many locations.  Chameleon \cite{Stuckey2003-pz,Fu2021-xd} improved type error slicing by allowing programmers to interactively show the partial MUS by choosing their own assumptions. Compared to these tools that base their analysis on a single MUS, Goanna effectively utilizes all possible MUSes. This allows Goanna to enhance its suggestions based on the improved knowledge of the underlying type of error. For example, it uses the number of MUSes a location appears in to rank how likely this location is part of the root cause. This is not possible with a single MUS.  
 
 \section{Future Work}\label{sec:future-work}
 
-\subsection{Planned User Studies and Research Questions}
+\paragraph{Planned User Studies and Research Questions}
 
 Our evaluation of Goanna so far relies on existing datasets and program generation. Evaluating Goanna with human participants is crucial for obtaining qualitative insights into its usefulness in explaining and supporting sense-making in complex type errors. We conducted a few preliminary workshops where university students were shown and invited to use Goanna, and most of them reacted positively to using Goanna's debugging experience. However, a rigorous human-centered study based on realistic debugging use cases is planned for the near future. We aim to investigate the following questions:
 
 \itemize{
-  \item Can Goanna's accuracy in type error identification contribute to improved understanding and performance in real-world programming tasks?
+  \item Can Goanna's accuracy in type error identification contribute to improved understanding and performance in real-world programming tasks
   \item Which user interface paradigms effectively leverage Goanna's strengths (such as accessing all possible error causes) and mitigate its limitations (such as slow response times with large programs)?
 }
 
-\subsection{Suggesting Syntax Approaches}
+\paragraph{Suggesting Syntax Approaches}
 
-Goanna's suggestion is limited in the way that it only provides type-level suggestions. For example, it may suggest {\it change this string literal ``3'' to an expression of type Int}, but not {\it change this string literal ``3'' to 3}.  An exciting avenue for enhancement is its ability to suggest syntax changes that potentially solve the type error. As noted in \cite{Chen2014-dz}, syntax changes pose significant challenges. However, with recent advancements in generative models and research progress in ML-based type error resolution \cite{Seidel2017-uf}, the development of accurate syntax change suggestions is becoming increasingly feasible, as we discussed in Section \ref{sec:llm}.
+Because Goanna explores the mutation space of types, its suggestions can only provide type-level changes. For example, it may suggest {\it change this string literal ``3'' to an expression of type Int}, but not {\it change this string literal ``3'' to 3}.  An exciting avenue for enhancement is to suggest syntax-level changes that potentially solve the type error. As noted in \cite{Chen2014-dz}, syntax changes pose significant challenges. However, with recent advancements in generative models and research progress in ML-based type error resolution \cite{Seidel2017-uf}, the development of accurate syntax change suggestions is becoming increasingly feasible, as we discussed in Section \ref{sec:llm}.
 
-\subsection{Supporting Additional Languages}
+\paragraph{Supporting Additional Languages}
 
 Expanding Goanna's capabilities to encompass other functional programming languages beyond Haskell is also a consideration. Languages such as Scala and OCaml, which practice similar type systems to Haskell, can directly benefit from Goanna's functionalities. We also intend to extend these techniques to popular multi-paradigm languages such as TypeScript and Rust.
 
