@@ -47,7 +47,13 @@
 \usepackage{algorithm}%
 \usepackage{algorithmicx}%
 \usepackage{algpseudocode}%
-\usepackage{listings}%
+\usepackage{listings}
+\usepackage{courier}  % For Courier font (optional)
+% Or use any other monospaced font package
+
+\lstset{
+  basicstyle=\ttfamily\small,  % Use \small or \footnotesize for size
+}%
 \setlength{\marginparwidth}{2cm}
 \usepackage{todonotes}
 \usepackage{float}%
@@ -111,7 +117,7 @@ Statically typed languages offer many advantages in software engineering, includ
 
 Statically typed languages offer numerous benefits in software engineering, including the ability to detect errors before program execution \cite{Ray2017-gq,Gao2017-xn}, facilitating easier and safer code refactoring \cite{Kleinschmager2012-bg}, enhancing code readability \cite{Endrikat2014-uz}, and providing tighter integration with code editors and integrated development environments (IDEs) \cite{Mayer2012-ko}. These attributes often render statically typed languages more suitable for large projects that undergo frequent modifications. The emergence of new languages with strong type systems, such as Rust and TypeScript, and the addition of static type checkers to previously dynamically typed languages, like MyPy for Python and static types for PHP and Ruby, reflect this trend.
 
-Statically typed languages manifest in multiple paradigms. Functional programming languages, such as ML and Haskell, have embraced static typing since their conception. Compared to languages from other paradigms, such as Java and C, statically typed functional languages offer two distinct advantages. First, they feature more flexible and expressive type systems that allow domain problems to be succinctly modeled at the type level with strong guarantees of correct behavior. Second, the support for polymorphic types and global type inference enable rigorous type checking even without explicitly writing type annotations. This paper uses Haskell as a case study to explore the challenges and solutions associated with advanced type systems.
+Statically typed languages manifest in multiple paradigms. Functional programming languages, such as ML and Haskell, have embraced static typing since their conception. Compared to languages from other paradigms, such as Java and C, statically typed functional languages offer two distinct advantages. First, they feature more flexible and expressive type systems that allow domain problems to be succinctly modeled at the type level with strong guarantees of correct behavior. Second, the support for polymorphic types and global type inference enables rigorous type checking even without explicitly writing type annotations. This paper uses Haskell as a case study to explore the challenges and solutions associated with advanced type systems.
 
 Haskell is renowned for its expressive and robust type system, which allows programmers to develop programs in a type-driven manner. Innovations in type systems frequently pioneered from Haskell, such as algebraic data types, type inference, and type classes, have been incorporated into mainstream programming languages \cite{Hudak2007-kn, TypeScriptTeam_undated-qk, Klabnik_undated-mp, Griesemer_undated-ff}. Despite the advanced type system, Haskell is equally known for its steep learning curve, unforgiving type checker, and cryptic type errors. Extensive research has sought to alleviate these challenges \cite{Tirronen2015-nr, Chen2014-dz, Heeren2003-kd, Zhang2015-xy, Lerner2007-yq, Zhang2017-tj}. Programmers often find type error messages in Haskell are excessively terse, confusing, and misleading. For example, as illustrated in Fig.~\ref{fig:motivation}, a type mismatch between a {\tt Char} and an integer leads to perplexing errors, particularly for novice users. We have identified three primary issues contributing to the difficulty of interpreting these error messages:
 
@@ -145,11 +151,11 @@ The techniques employed in Goanna, such as MUS enumeration and the ranking heuri
 
 \section{Related Work} 
     \label{sec:related-work}
-    In this section, we survey the corpus of work that Goanna built upon and was inspired by. We first review the work that is built on a theoretical foundation similar to that of Goanna. We then examine studies that share similar aims and offer a debugging experience comparable to Goanna's. Finally, we delve into research on program slicing and discuss how Goanna extends the concept of slicing and distinguishes itself from its predecessors.
+    In this section, we survey the corpus of work that Goanna built upon and was inspired by. We first review the work that is built on a theoretical foundation similar to that of Goanna. We then examine studies that share similar aims and offer a debugging experience comparable to Goanna's. Finally, we review research on program slicing and discuss how Goanna extends the concept of slicing and distinguishes itself from its predecessors.
 
-    \subsection{MCS enumeration}
+    \subsection{Minimum Unsatisfiable Subset (MUS) Enumeration}
 	
-    MCS enumeration has been extensively studied in the field of error localization across various domains. MCS is used to optimize package management systems \cite{Ignatiev2014-nr} and to explain decisions made by machine learning algorithms \cite{Marques-Silva2023-nk}.
+    MUS enumeration has been extensively studied in the field of error localization across various domains. MCS is used to optimize package management systems \cite{Ignatiev2014-nr} and to explain decisions made by machine learning algorithms \cite{Marques-Silva2023-nk}.
     
     
     In the specific context of type error diagnosis and resolution, several related approaches have been explored. It is important to examine the strengths and weaknesses of Goanna in the context of these areas.
@@ -244,7 +250,7 @@ In this section, we demonstrate Goanna's features using some real-world examples
     \section{Goanna Implementation} \label{sec:implementation}
 Goanna consists of three phases: constraint generation, MUS enumeration, and post-analysis, each with its distinct role. In the constraint generation phase (Section \ref{sub:translation}), Goanna translates program syntax into constraints. During the MUS enumeration phase (Section \ref{sub:enumeration}), Goanna identifies all critical constraint subsets, which include Minimal Unsatisfiable Subsets, Minimal Correction Subsets, and Maximal Satisfiable Subsets. Finally, in the post-analysis phase, Goanna applies various optimization techniques and transforms the critical constraint subsets into intuitive type error diagnostics. This phase includes type error grouping (Section \ref{sub:grouping}) and case ranking (Section \ref{sub:ranking}).
 
-    Goanna supports a wide and growing range of the Haskell 2010 language syntax \cite{Simon_Marlow2010-lg}. When writing, fully supported features include module import/export, qualified imports, import hiding, do notation, algebraic data types, new types, type synonyms, type classes, operator sectioning, and range expression. Only operating at the type level, Goanna automatically supports the language extensions that are not type-related (RecordWildcard) and those that do not extend the rules of the underlying type system (InstanceSigs). Overall, Goanna supports the most widely used type-level extensions in Haskell, and the range of supported features continues growing.  A detailed and updated feature coverage \cite{Fu2023-rp} is publicly available.
+    Goanna supports a wide and growing range of the Haskell 2010 language syntax \cite{Simon_Marlow2010-lg}. When writing, fully supported features include module import/export, qualified imports, import hiding, do notation, algebraic data types, new types, type synonyms, type classes, operator sectioning, and range expression. Only operating at the type level, Goanna automatically supports the language extensions that are not type-related (RecordWildcard) and those that do not extend the rules of the underlying type system (InstanceSigs). Overall, Goanna supports the most widely used type-level extensions in Haskell, and the range of supported features continues to grow.  A detailed and updated feature coverage \cite{Fu2023-rp} is publicly available.
 
     \subsection{Constraint Generation} \label{sub:translation}
 In this phase, Goanna translates Haskell source code into constraints. Specifically, Goanna uses any ISO-compatible Prolog \cite{Wielemaker2011-sr} as its underlying constraint language and solver. Prolog is chosen because it is a widely used logic programming language; this helps generalize Goanna's approach to different programming languages in the future.  At the end of the constraint generation phase, a Prolog program is produced. This Prolog program will succeed upon execution if the Haskell code is well-typed and will fail otherwise. Each line of the Prolog program is annotated with a corresponding location in the Haskell source code. During the MUS enumeration phase, these lines can be conditionally activated or deactivated to determine whether a particular location in the Haskell code contributes to a potential issue. This section outlines how we generate this Prolog program. 
@@ -298,7 +304,7 @@ For a simplified Haskell syntax shown in Fig.~\ref{fig:translation}.A, we genera
 By utilizing the principles of Minimal Unsatisfiable Subsets (MUSes), Minimal Correction Subsets (MCSes), and Maximal Satisfiable Subsets (MSSes), we have identified four primary categories of type errors. More complex type errors encountered in practice can be decomposed into one or more of these basic categories. This formalization helps reasoning about type errors and provides intuitive explanations for them. We use this categorization as a guiding principle for post-analysis steps and error diagnosis design. Furthermore, this categorization offers insights into the computational complexity of our method, as demonstrated in our evaluation (Section \ref{sec:evaluation}).
 
 \subsubsection*{Simple Type Error}
-A \textbf{simple type error} always involves two locations in the program that can not agree on a type assignment. An example like Listing \ref{lst:atomic-error} shows such an error. In the example, {\tt x} can be inferred as either {\tt Int} or {\tt Char} type based on line 1 or line 2. 
+A \textbf{simple type error} always involves two locations in the program that can not agree on a type assignment. An example like Listing \ref{lst:atomic-error} shows such an error. In the example, {\tt x} can be inferred as either {\tt Int} or {\tt String} type based on line 1 or line 2. 
 
 \begin{lstlisting}[language=Haskell, caption=An example of a simple type error, label={lst:atomic-error}]
   x :: Int
@@ -347,7 +353,7 @@ Multi-witness type errors are also common in practice. They often occur when cha
   
 Multi-party type errors are not common in real-life programs. They can happen when programmers mix the order of multiple arguments in a function application.  
   
-We provide some strategies to improve type error diagnostics for each category:
+We provide strategies to improve type error diagnostics for each category:
 
 \begin{enumerate}
   \item {
@@ -365,7 +371,7 @@ We provide some strategies to improve type error diagnostics for each category:
   }
 \end{enumerate}
 
-It is important to recognize that these categories are not mutually exclusive; a type error may exhibit characteristics from multiple categories, necessitating a combination of approaches to fully elucidate the underlying issues.
+It is important to note that these categories are not mutually exclusive. In practice, a type error may exhibit characteristics from multiple categories.  A combination of strategies is required to fully reveal the root causes.
 
 \subsection{Type Error Grouping} \label{sub:grouping}
 
@@ -496,7 +502,7 @@ Goanna's high accuracy and reliability come at the tradeoff of its computational
     \label{fig:performance}
 \end{figure}
 
-The computational expense of Goanna is primarily attributed to Minimal Unsatisfiable Subset (MUS) enumeration, which is constrained by two key factors. The first factor is the cost of identifying a single MUS, determined by the size of the program. The algorithm for finding an MUS involves the repeated removal of a single random constraint followed by satisfiability testing, a process known as ``{\it shrink}". Since the number of constraints corresponds to the number of syntax nodes in the program, longer programs necessitate more satisfiability checks, resulting in a longer ``{\it shrink}" process. The second factor is the total number of MUSes, which depends on the category (Section \ref{sec:categories}) of the type error in question. Consequently, we analyzed performance based on program size and type error category.
+The computational expense of Goanna is primarily attributed to Minimal Unsatisfiable Subset (MUS) enumeration, which is constrained by two key factors. The first factor is the cost of identifying a single MUS, determined by the size of the program. The algorithm for finding an MUS involves the repeated removal of a single random constraint followed by satisfiability testing, a process known as ``{\it shrink}". Since the number of constraints corresponds to the number of syntax nodes in the program, longer programs require more satisfiability checks, resulting in a longer ``{\it shrink}" process. The second factor is the total number of MUSes, which depends on the category (Section \ref{sec:categories}) of the type error in question. Consequently, we analyzed performance based on program size and type error category.
 
 \paragraph{Program Size:}
 To measure the impact of program size on Goanna's performance, we constructed four sets of programs: Set 1 contains a type error involving 2 locations, Set 2 contains a type error involving 10 locations, Set 3 contains a type error involving 20 locations, and Set 4 contains a type error involving 30 locations. For each set, we initiate testing with the minimal number of syntax nodes and progressively increase the program length to contain up to 1200 syntax nodes, while the attributes of the type error remain unchanged. Fig.~\ref{fig:node-size} demonstrates the impact of program size on the time taken to generate type error diagnostics. It shows that Goanna's performance is slowed down with the increase in the size of the program; this holds true even when the type error remains unchanged. The diagnosis takes 0.25 seconds with 200 syntax nodes (approximately 20 lines of code) for a type error involving two potential fix locations. Still, it increases to 7 seconds with 1200 syntax nodes (approximately 120 lines of code). Furthermore, it shows that more complex type errors require additional time for diagnosis, independent of the effect of program size.
@@ -672,7 +678,7 @@ When tested with the prompt ``Is there a type error in the Haskell code:
 While LLMs are getting more and more accurate with each iteration, some doubt whether they will ever become as reliable as theory-based tools \cite{Berglund2023-ig}. We believe in the great potential of integrating LLMs with existing theory-based tools, such as Goanna. This integration could enhance the performance of LLMs by aligning their operations with accurate theoretical guides or utilizing their strengths to complement traditional tools' shortcomings, such as suggesting syntactical improvements and coming up with personalized error messages suited for the programmer's skill level. This synergy could lead to more robust programming assistance using both types of tools. We propose two candidate workflows:
 
 \itemize{
-  \item{\textbf{Code Generation with Validation}: LLMs could generate initial source code based on user-provided prompts. Theory-based tools, such as Goanna, then check for errors. Detected errors could be fed back to the LLMs for corrections, enhancing both the efficiency and accuracy of code development.}
+  \item{\textbf{Code Generation with Validation}: LLMs could generate initial source code based on user-provided prompts. Theory-based tools, such as Goanna, then check for errors. Detected errors could be fed back to the LLMs for corrections, enhancing the efficiency and accuracy of code development.}
   \item {\textbf{Error Tutoring and Resolution}: Theory-based tools could identify errors in manually written code, with LLMs suggesting syntax corrections. This combines the precise error detection from traditional theory-based tools with the ability of LLMs to generate effective syntax changes, surpassing traditional tools in this domain.}
 }
 
