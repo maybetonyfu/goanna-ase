@@ -156,7 +156,7 @@ The techniques employed in Goanna, such as MUS enumeration and the ranking heuri
     \subsection{Constraint-based Type Systems}
 Type systems can be viewed as logical systems, a perspective established since the dawn of programming language research \cite{Reis_undated-lt}. Many attempts have been made to model type systems using formal logic. Notable examples include the work of Pottier and Rémy, in which a type system for the ML Language \cite{PottierUnknown-je} is specified in terms of constraints. Succinctly defining a specialized constraint language and solver, their work demonstrates the simplicity and flexibility of using constraints as a method for studying programming languages. Similarly, Hage and Heeren \cite{Hage2006-gc} proposed another constraint-based type system, including a set of combinators that efficiently order constraints, reducing the workload and complexity of the constraint solver. These systems use constraints to simplify the construction of the type systems. However, apart from simplicity in the formal specification, the use of constraints in the above work provides no further advantages over traditional algorithmic methods.
 
-Constraint logic, a branch of formal logic, offers an intuitive and declarative framework for understanding types as logic constraints. In constraint logic, type checking a program can be viewed as finding solutions for possible type assignments for each expression in the source code. Each expression introduces new restrictions on potential solutions. For simplicity, in this paper, we only discuss one type of constraint: equality, written as $A = B$ to denote that $A$ and $B$ can be unified using the unification algorithm \cite{Robinson2012-hy}. Other types of constraints are needed to specify advanced type-level features. Many studies have sought to implement type systems based on constraint logic, often employing techniques of finding and analyzing a few critical subsets, defined as follows:
+Constraint logic, a branch of formal logic, offers an intuitive and declarative framework for understanding types as logic constraints. In constraint logic, type checking a program can be viewed as finding solutions for possible type assignments for each expression in the source code. Each expression introduces new restrictions on potential solutions. Many studies have sought to implement type systems based on constraint logic, often employing techniques of finding and analyzing a few critical subsets, defined as follows:
 
 \begin{description}
 \item[Minimal Unsatisfiable Subset (MUS)] An MUS of a set of constraints $C$ is a subset $M \subseteq C$ such that $M$ is unsatisfiable and $ \forall{c} \in M : M \setminus \{c\}$ is satisfiable. An MUS provides a concise explanation for the infeasibility of a system, highlighting a logical pathway from one conflicting location to another. Thereby, MUS is often associated with addressing the "Why" question \cite{Ignatiev2020-xu, Nelson2017-ar}, in other words, finding the minimal contributors that prevent the system from emitting a defect.
@@ -207,7 +207,9 @@ In practice, type errors in this category are trivial to resolve. The two offend
   \label{fig:multi-step-2}
   \end{figure}
 
-Multi-step type errors involve a sequence of logical deductions that link one conflicting location to another. When viewed as a constraint system, a multi-step type error is a type error that contains a single MUS. Relaxing any constraint within the MUS leads to a satisfiable system, implying that each location correlated to a constraint in the MUS could potentially cause the type error. For instance, in a typical multi-step type error shown in  Fig.~\ref{fig:multi-step-2}, the MUS consists of the constraints $\{C1, C2, C4, C5\}$. Removing any one of the elements would allow the program to type-check successfully. In this, the notation $t_x$ is used to denote a meta-variable. A meta-variable represents the potential type that an expression is going to assume.
+  Multi-step type errors involve a sequence of logical deductions that link one conflicting location to another. When viewed as a constraint system, a multi-step type error is a type error that contains a single MUS. Relaxing any constraint within the MUS leads to a satisfiable system, implying that each location correlated to a constraint in the MUS could potentially cause the type error. For instance, in a typical multi-step type error shown in  Fig.~\ref{fig:multi-step-2}, the MUS consists of the constraints $\{C1, C2, C4, C5\}$. Removing any one of the elements would allow the program to type-check successfully.
+
+  For simplicity, in this paper, we only discuss one type of constraint: equality, written as $A = B$ to denote that $A$ and $B$ can be unified using the unification algorithm \cite{Robinson2012-hy}. Other types of constraints are needed to specify advanced type-level features, such as type classes. In this, the notation $t_x$ is used to denote a meta-variable. A meta-variable represents the potential type that an expression is going to assume. 
 
 Multi-step type errors are more common in practice. They occur naturally when programs develop layers of indirection or abstraction. They can cause confusion to programmers because the error can be reported in one place, but the root cause is at a distant location and requires tracing back and forth and mental bookkeeping. 
 
@@ -442,23 +444,9 @@ To answer {\bf RQ1}, we conducted a corpus study on defective Haskell programs c
 
 \subsection{The Datasets} \label{sub:dataset}
 
-We compiled two datasets of defective Haskell programs (N=153) for running the evaluation. The first dataset (N=86), named \texttt{Haskell Community}, was sourced from Haskell online discussion forums, each containing one or more type errors. These include StackOverflow, Reddit, and Discord, which are the top communications channels for Haskell users based on a research survey \cite{Fausak2022-zf}. We focused on discussions where authors encountered type errors and sought help, including only those with solutions accepted by the original authors. The second dataset (N=67), called \textit{Haskell Academic}, was compiled from peer-reviewed research papers (Table. \ref{sec:appendix-a}) that are related to Haskell type errors.
+We compiled two datasets of defective Haskell programs (N=153) for running the evaluation. The first dataset (N=86), named \texttt{Haskell Community}, was sourced from Haskell online discussion forums, each containing one or more type errors. These include StackOverflow, Reddit, and Discord, which are the top communications channels for Haskell users based on a research survey \cite{Fausak2022-zf}. We focused on discussions where authors encountered type errors and sought help, including only those with solutions accepted by the original authors. The second dataset (N=67), called \textit{Haskell Academic}, was compiled from 23 peer-reviewed research papers that are related to Haskell type errors. This include type system features \cite{Chargueraud2015-km,Haack2004-fr,Bhanuka2023-qv,Lee1998-fx}, systems to improve type error \cite{Zhang2015-xy,Zhang2017-tj,Chen2014-dz,Chen2020-ad,Chen2022-xb,Seidel2017-uf,Tsushima2021-es,Wu2017-ws,Fu2023-fm,Stuckey2003-pz,Chen2017-fc,Stuckey2004-fb,Lerner2007-yq,Pavlinovic2014-rw}, corpus studies \cite{Wu2017-eb,Tirronen2015-nr,Nemeth2019-pv}, tool demonstration \cite{Heeren2003-kd,Stuckey2003-lo}.
 
 Program lengths ranged from 1 to 64 lines of code (mean=20, median=20). These programs covered a variety of themes, including basic syntax (14 files), lists (28 files), tuples (5 files), algebraic data types (22 files), higher-order functions (17 files), monadic operations and do notation (9 files), type classes (6 files), and built-in/library functions (24 files). This thematic distribution aligns with the different causes of type errors from Tirronen's study \cite{Tirronen2015-nr}.
-
-
-% \begin{table}
-% \centering
-% \begin{tabular}{|c|c|}
-%     \hline
-%     \textbf{Source} & \textbf{Programs} \\ \hline
-%     StackOverflow & 32 \\ \hline
-%     Haskell on Reddit & 20 \\ \hline
-%     Haskell Discord & 34 \\ \hline
-% \end{tabular}
-% \caption{Distribution of Programs from Online Haskell Communities}
-% \label{tab:haskell-community}
-% \end{table}
 
 \subsection{Accuracy and Reliability} \label{sub:eval-accuracy}
 
@@ -717,150 +705,150 @@ We evaluated the effectiveness of Goanna from a set of 153 Haskell programs from
 \bibliography{paperpile}
 
 
-\newpage
+% \newpage
 
-\appendix
+% \appendix
 
-\section{Appendix A} \label{sec:appendix-a}
+% \section{Appendix A} \label{sec:appendix-a}
 
-Below are the papers we used to compile the Haskell Academic error dataset.
+% Below are the papers we used to compile the Haskell Academic error dataset.
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|p{5cm}|c|c|c|}
-    \hline
-    \textbf{Paper} & \textbf{Type} & \textbf{Tool} & \textbf{Programs} \\ \hline
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{|p{5cm}|c|c|c|}
+%     \hline
+%     \textbf{Paper} & \textbf{Type} & \textbf{Tool} & \textbf{Programs} \\ \hline
 
-  \raggedright
-    How Type Errors Were Fixed and What Students Did? &
-    Empirical Study &
-    &
-    14  \\ \hline
+%   \raggedright
+%     How Type Errors Were Fixed and What Students Did? &
+%     Empirical Study &
+%     &
+%     14  \\ \hline
 
-  \raggedright
-    Helium: for Learning Haskell &
-    System/Tool &
-    Helium &
-    7 \\ \hline
+%   \raggedright
+%     Helium: for Learning Haskell &
+%     System/Tool &
+%     Helium &
+%     7 \\ \hline
 
-  \raggedright
-    Diagnosing Haskell Type Errors &
-    System/Tool &
-    SHErrLoc &
-    1 \\ \hline
+%   \raggedright
+%     Diagnosing Haskell Type Errors &
+%     System/Tool &
+%     SHErrLoc &
+%     1 \\ \hline
 
-  \raggedright
-    SHErrLoc: A Static Holistic Error Location &
-    System/Tool &
-    SHErrLoc &
-    1 \\ \hline
+%   \raggedright
+%     SHErrLoc: A Static Holistic Error Location &
+%     System/Tool &
+%     SHErrLoc &
+%     1 \\ \hline
 
-  \raggedright
-    Counterfactual Typing for Debugging Type Errors &
-    System/Tool &
-    Counterfactual Typing &
-    2 \\ \hline
+%   \raggedright
+%   Counterfactual Typing for Debugging Type Errors &
+%     System/Tool &
+%     Counterfactual Typing &
+%     2 \\ \hline
   
-  \raggedright
-    Understanding Beginners' Mistakes with Haskell &
-    Empirical Study &
-    &
-    2 \\ \hline
+%   \raggedright
+%     Understanding Beginners' Mistakes with Haskell &
+%     Empirical Study &
+%     &
+%     2 \\ \hline
   
-  \raggedright
-    Learning to Blame: Localizing Novice Type Errors with Data-driven Diagnosis &
-    System/Tool &
-    Nate &
-    5 \\ \hline
+%   \raggedright
+%     Learning to Blame: Localizing Novice Type Errors with Data-driven Diagnosis &
+%     System/Tool &
+%     Nate &
+%     5 \\ \hline
 
-  \raggedright
-    Type Debugging with Counterfactual Type Error Messages Using an Existing Type Checker &
-    &
-    &
-    1 \\ \hline
+%   \raggedright
+%     Type Debugging with Counterfactual Type Error Messages Using an Existing Type Checker &
+%     &
+%     &
+%     1 \\ \hline
 
-  \raggedright
-    Improving Type Error Messages in OCaml &
-    &
-    &
-    5 \\ \hline
+%   \raggedright
+%   Improving Type Error Messages in OCaml &
+%     &
+%     &
+%     5 \\ \hline
 
-  \raggedright
-    Type Error Slicing in Implicitly Typed Higher-Order Languages &
-    System/Tool &
-    Type Error Slicing &
-    1 \\ \hline
+%   \raggedright
+%     Type Error Slicing in Implicitly Typed Higher-Order Languages &
+%     System/Tool &
+%     Type Error Slicing &
+%     1 \\ \hline
 
-  \raggedright
-    Getting into the Flow &
-    System/Tool &
-    &
-    1 \\ \hline
+%   \raggedright
+%   Getting into the Flow &
+%     System/Tool &
+%     &
+%     1 \\ \hline
 
-  \raggedright
-    Learning User-friendly Type-error Messages &
-    System/Tool &
-    LearnHaskell &
-    3 \\ \hline
+%   \raggedright
+%     Learning User-friendly Type-error Messages &
+%     System/Tool &
+%     LearnHaskell &
+%     3 \\ \hline
 
-  \raggedright
-    ChameleonIDE: Untangling Type Errors Through Interactive Visualization and Exploration &
-    System/Tool &
-    ChameleonIDE &
-    4 \\ \hline
+%   \raggedright
+%     ChameleonIDE: Untangling Type Errors Through Interactive Visualization and Exploration &
+%     System/Tool &
+%     ChameleonIDE &
+%     4 \\ \hline
 
-  \raggedright
-    Investigating Compilation Errors of Students Learning Haskell &
-    Empirical Study &
-    &
-    5 \\ \hline
+%   \raggedright
+%     Investigating Compilation Errors of Students Learning Haskell &
+%     Empirical Study &
+%     &
+%     5 \\ \hline
 
-  \raggedright
-    The Chameleon Type Debugger (Tool Demonstration) &
-    System/Tool &
-    Chameleon &
-    6 \\ \hline
+%   \raggedright
+%     The Chameleon Type Debugger (Tool Demonstration) &
+%     System/Tool &
+%     Chameleon &
+%     6 \\ \hline
 
-  \raggedright
-    Proofs about a Folklore Let-Polymorphic Type Inference Algorithm &
-    System/Tool &
-    Algorithm M &
-    2 \\ \hline
+%   \raggedright
+%     Proofs about a Folklore Let-Polymorphic Type Inference Algorithm &
+%     System/Tool &
+%     Algorithm M &
+%     2 \\ \hline
 
-  \raggedright
-    Interactive Type Debugging in Haskell &
-    System/Tool &
-    Chameleon &
-    2 \\ \hline
+%   \raggedright
+%     Interactive Type Debugging in Haskell &
+%     System/Tool &
+%     Chameleon &
+%     2 \\ \hline
 
-  \raggedright
-    Exploiting Diversity in Type Checkers for Better Error Messages &
-    System/Tool &
-    Lazy Typing &
-    1 \\ \hline
+%   \raggedright
+%     Exploiting Diversity in Type Checkers for Better Error Messages &
+%     System/Tool &
+%     Lazy Typing &
+%     1 \\ \hline
 
-  \raggedright
-    Improving Type Error Diagnosis &
-    System/Tool &
-    &
-    3 \\ \hline
+%   \raggedright
+%     Improving Type Error Diagnosis &
+%     System/Tool &
+%     &
+%     3 \\ \hline
 
-  \raggedright
-    Searching for Type-Error Messages &
-    System/Tool &
-    SEMINAL &
-    1 \\ \hline
+%   \raggedright
+%   Searching for Type-Error Messages &
+%     System/Tool &
+%     SEMINAL &
+%     1 \\ \hline
 
-  \raggedright
-    Finding Minimum Type Error Sources &
-    System/Tool &
-    MaxSMT Based Tool &
-    1 \\ \hline
+%   \raggedright
+%     Finding Minimum Type Error Sources &
+%     System/Tool &
+%     MaxSMT Based Tool &
+%     1 \\ \hline
 
-\end{tabular}
-\caption{Summary of Studies and Tools in Haskell Research}
-\label{tab:haskell-research}
-\end{table}
+% \end{tabular}
+% \caption{Summary of Studies and Tools in Haskell Research}
+% \label{tab:haskell-research}
+% \end{table}
 
 
 
